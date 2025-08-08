@@ -1,56 +1,195 @@
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/store";
+import EditProfileModal from "@/components/profile/EditProfileModal";
+import { useMemo, useState } from "react";
+import { removeMedia, removeReply } from "@/features/profile/profileSlice";
+import { toggleLike } from "@/features/feed/feedSlice";
+import PostCard from "@/components/feed/Post";
+import UserList from "@/components/profile/UserList";
+import { Trash2 } from "lucide-react";
+
+type Tab = "Posts" | "Replies" | "Media" | "Likes";
+
 export default function Profile() {
-	return (
-		<div>
-			<div className="relative h-48 bg-neutral-200 dark:bg-neutral-800">
-				{/* Banner placeholder */}
-			</div>
-			<div className="px-4">
-				<div className="-mt-12 flex items-end justify-between">
-					<div className="flex items-end gap-3">
-						<div className="h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300" />
-						<div>
-							<h1 className="text-xl font-bold leading-tight">You</h1>
-							<p className="text-neutral-500">@you</p>
-						</div>
-					</div>
-					<button className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5">
-						Edit profile
-					</button>
-				</div>
+  const dispatch = useDispatch();
+  const me = useSelector((s: RootState) => s.profile.me);
+  const followers = useSelector((s: RootState) => s.profile.followers);
+  const following = useSelector((s: RootState) => s.profile.following);
+  const replies = useSelector((s: RootState) => s.profile.replies);
+  const media = useSelector((s: RootState) => s.profile.media);
+  const posts = useSelector((s: RootState) => s.feed.posts);
 
-				<div className="mt-4">
-					<p className="text-sm text-neutral-700 dark:text-neutral-300">
-						Bio goes here. Building web apps with Next.js.
-					</p>
-					<div className="mt-2 text-sm text-neutral-500">
-						123 Following · 4,567 Followers
-					</div>
-				</div>
+  const [tab, setTab] = useState<Tab>("Posts");
+  const [editOpen, setEditOpen] = useState(false);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
 
-				<div className="mt-4 border-b border-neutral-200 dark:border-neutral-800">
-					<ul className="flex">
-						{['Posts', 'Replies', 'Media', 'Likes'].map((t) => (
-							<li
-								key={t}
-								className="flex-1 cursor-pointer py-3 text-center transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
-							>
-								<span className="text-sm font-medium">{t}</span>
-							</li>
-						))}
-					</ul>
-				</div>
+  const myPosts = useMemo(() => posts.filter((p) => p.author.handle.toLowerCase() === me.handle.toLowerCase()), [posts, me.handle]);
+  const likedPosts = useMemo(() => posts.filter((p) => p.liked), [posts]);
 
-				<div>
-					{Array.from({ length: 3 }).map((_, i) => (
-						<div
-							key={i}
-							className="border-b border-neutral-200 dark:border-neutral-800 p-4 transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
-						>
-							Profile post {i + 1}
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div>
+      <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+        {me.bannerUrl && (
+          <img src={me.bannerUrl} alt="banner" className="h-full w-full object-cover" />
+        )}
+      </div>
+
+      <div className="px-4">
+        <div className="-mt-12 flex items-end justify-between">
+          <div className="flex items-end gap-3">
+            <div className="h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300 overflow-hidden">
+              {me.avatarUrl && (
+                <img src={me.avatarUrl} alt={me.name} className="h-24 w-24 object-cover" />
+              )}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold leading-tight">{me.name}</h1>
+              <p className="text-neutral-500">@{me.handle}</p>
+            </div>
+          </div>
+          <button onClick={() => setEditOpen(true)} className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5">
+            Edit profile
+          </button>
+        </div>
+
+        <div className="mt-4">
+          {me.bio && <p className="text-sm text-neutral-700 dark:text-neutral-300">{me.bio}</p>}
+          <div className="mt-2 text-sm text-neutral-500 flex gap-4">
+            <button onClick={() => setShowFollowing(true)} className="hover:underline">
+              <span className="font-semibold text-[var(--color-foreground)]">{following.length}</span> Following
+            </button>
+            <button onClick={() => setShowFollowers(true)} className="hover:underline">
+              <span className="font-semibold text-[var(--color-foreground)]">{followers.length}</span> Followers
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 border-b border-neutral-200 dark:border-neutral-800">
+          <ul className="flex">
+            {(["Posts", "Replies", "Media", "Likes"] as Tab[]).map((t) => (
+              <li
+                key={t}
+                onClick={() => setTab(t)}
+                className={`flex-1 cursor-pointer py-3 text-center transition-colors hover:bg-neutral-50 dark:hover:bg-white/5 ${tab === t ? "font-semibold" : ""}`}
+              >
+                <span className="text-sm">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="min-h-[40vh]">
+          {tab === "Posts" && (
+            <div>
+              {myPosts.length === 0 && <div className="p-4 text-sm text-neutral-500">You haven’t posted yet.</div>}
+              {myPosts.map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+          )}
+
+          {tab === "Replies" && (
+            <div>
+              {replies.length === 0 && <div className="p-4 text-sm text-neutral-500">No replies yet.</div>}
+              <ul>
+                {replies.map((r) => (
+                  <li key={r.id} className="border-b border-neutral-200 dark:border-neutral-800 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm text-neutral-500">Replied · {new Date(r.createdAt).toLocaleDateString()}</div>
+                        <p className="mt-1 whitespace-pre-wrap">{r.content}</p>
+                      </div>
+                      <button
+                        onClick={() => dispatch(removeReply({ id: r.id }))}
+                        className="rounded-full p-2 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+                        title="Delete reply"
+                        aria-label="Delete reply"
+                      >
+                        <Trash2 className="h-4 w-4 text-neutral-500" />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {tab === "Media" && (
+            <div className="p-4">
+              {media.length === 0 && <div className="text-sm text-neutral-500">No media yet.</div>}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {media.map((m) => (
+                  <div key={m.id} className="group relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
+                    <img src={m.url} alt="media" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => dispatch(removeMedia({ id: m.id }))}
+                      className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      title="Remove media"
+                      aria-label="Remove media"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {tab === "Likes" && (
+            <div>
+              {likedPosts.length === 0 && <div className="p-4 text-sm text-neutral-500">No likes yet.</div>}
+              {likedPosts.map((p) => (
+                <div key={p.id}>
+                  <PostCard post={p} />
+                  <div className="px-4 pb-3">
+                    <button
+                      onClick={() => dispatch(toggleLike({ id: p.id }))}
+                      className="rounded-full border px-3 py-1.5 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
+                    >
+                      Unlike
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
+
+      {showFollowers && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/90" onClick={() => setShowFollowers(false)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg">
+              <UserList users={followers} title="Followers" />
+              <div className="mt-3 flex justify-end">
+                <button onClick={() => setShowFollowers(false)} className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFollowing && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/90" onClick={() => setShowFollowing(false)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg">
+              <UserList users={following} title="Following" />
+              <div className="mt-3 flex justify-end">
+                <button onClick={() => setShowFollowing(false)} className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import uiReducer from "@/features/ui/uiSlice";
 import feedReducer from "@/features/feed/feedSlice";
+import profileReducer from "@/features/profile/profileSlice";
 
 export const store = configureStore({
   reducer: {
     ui: uiReducer,
     feed: feedReducer,
+    profile: profileReducer,
   },
 });
 
