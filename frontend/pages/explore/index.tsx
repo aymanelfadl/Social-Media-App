@@ -69,16 +69,15 @@ export default function Explore() {
         </div>
       )}
       
-      <div className="sticky top-0 z-10 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/95 dark:bg-black/95 backdrop-blur px-4 py-3">
+      <div className="sticky top-0 z-10 border-b border-neutral-200/80 dark:border-neutral-800/80  backdrop-blur px-4 py-3">
         <div className="relative">
           <input
             type="search"
             placeholder="Search posts and people"
-            className="w-full rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 px-4 py-2 text-sm outline-none"
+            className="w-full rounded-full border border-neutral-200 dark:border-neutral-800  px-4 py-2 text-sm outline-none"
             onChange={(e) => {
               const value = e.target.value;
               if (value.length >= 2) {
-                // Would connect to searchAll API in a real implementation
                 console.log("Searching for:", value);
               }
             }}
