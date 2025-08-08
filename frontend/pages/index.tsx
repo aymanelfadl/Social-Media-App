@@ -1,15 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addPost, setPosts, type Post } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
-import { Feather } from "lucide-react";
+import { Feather, Image as ImageIcon } from "lucide-react";
 
 export default function Home() {
   const dispatch = useDispatch();
   const posts = useSelector((s: RootState) => s.feed.posts);
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+
+  const maxLen = 280;
+  const remaining = maxLen - text.length;
+  const over = remaining < 0;
 
   useEffect(() => {
     if (posts.length === 0) {
@@ -21,6 +25,8 @@ export default function Home() {
           createdAt: new Date().toISOString(),
           images: ["/images/logo.png"],
           metrics: { replies: 12, reposts: 4, likes: 89, views: 1203 },
+          liked: false,
+          reposted: false,
         },
         {
           id: "2",
@@ -28,15 +34,22 @@ export default function Home() {
           content: "Dark mode support via CSS variables and Tailwind's dark class.",
           createdAt: new Date().toISOString(),
           metrics: { replies: 2, reposts: 3, likes: 20, views: 450 },
+          liked: false,
+          reposted: false,
         },
       ];
       dispatch(setPosts(demo));
     }
   }, [dispatch, posts.length]);
 
+  const canPost = useMemo(() => {
+    const trimmed = text.trim();
+    return (trimmed.length > 0 || imageUrl.trim().length > 0) && !over;
+  }, [text, imageUrl, over]);
+
   const onPost = () => {
     const trimmed = text.trim();
-    if (!trimmed && !imageUrl.trim()) return;
+    if (!canPost) return;
     const newPost: Post = {
       id: Math.random().toString(36).slice(2),
       author: { name: "You", handle: "you" },
@@ -44,6 +57,8 @@ export default function Home() {
       createdAt: new Date().toISOString(),
       images: imageUrl ? [imageUrl.trim()] : undefined,
       metrics: { replies: 0, reposts: 0, likes: 0, views: 0 },
+      liked: false,
+      reposted: false,
     };
     dispatch(addPost(newPost));
     setText("");
@@ -63,7 +78,8 @@ export default function Home() {
               rows={3}
               className="w-full resize-none bg-transparent outline-none placeholder:text-neutral-500"
             />
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto] items-center">
               <input
                 type="url"
                 value={imageUrl}
@@ -71,19 +87,39 @@ export default function Home() {
                 placeholder="Paste image URL (optional)"
                 className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm outline-none"
               />
+              <div className="flex items-center justify-end gap-3">
+                <div className={`text-xs ${over ? "text-rose-600" : "text-neutral-500"}`}>{remaining}</div>
+                <button
+                  onClick={onPost}
+                  className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-4 py-2 text-white hover:bg-sky-600 disabled:opacity-50"
+                  disabled={!canPost}
+                  aria-label="Post"
+                >
+                  <Feather size={16} />
+                  Post
+                </button>
+              </div>
             </div>
-            <div className="mt-3 flex justify-end">
-              <button onClick={onPost} className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-4 py-2 text-white hover:bg-sky-600 disabled:opacity-50" disabled={!text.trim() && !imageUrl.trim()} aria-label="Post">
-                <Feather size={16} />
-                <span>Post</span>
-              </button>
-            </div>
+
+            {imageUrl.trim() && (
+              <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imageUrl.trim()} alt="preview" className="w-full h-auto object-cover" onError={() => setImageUrl("")} />
+              </div>
+            )}
+
+            {!imageUrl.trim() && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
+                <ImageIcon className="h-4 w-4" />
+                Add an image via a URL to preview it here.
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div>
-        {posts.map((p: Post) => (
+        {posts.map((p) => (
           <PostCard key={p.id} post={p} />
         ))}
       </div>

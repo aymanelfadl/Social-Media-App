@@ -16,6 +16,8 @@ export interface Post {
     likes: number;
     views: number;
   };
+  liked?: boolean;
+  reposted?: boolean;
 }
 
 interface FeedState {
@@ -41,8 +43,25 @@ const feedSlice = createSlice({
     setLoading(state: FeedState, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
+    toggleLike(state: FeedState, action: PayloadAction<{ id: string }>) {
+      const post = state.posts.find((p) => p.id === action.payload.id);
+      if (!post) return;
+      post.liked = !post.liked;
+      post.metrics.likes += post.liked ? 1 : -1;
+    },
+    toggleRepost(state: FeedState, action: PayloadAction<{ id: string }>) {
+      const post = state.posts.find((p) => p.id === action.payload.id);
+      if (!post) return;
+      post.reposted = !post.reposted;
+      post.metrics.reposts += post.reposted ? 1 : -1;
+    },
+    incrementViews(state: FeedState, action: PayloadAction<{ id: string }>) {
+      const post = state.posts.find((p) => p.id === action.payload.id);
+      if (!post) return;
+      post.metrics.views += 1;
+    },
   },
 });
 
-export const { setPosts, addPost, setLoading } = feedSlice.actions;
+export const { setPosts, addPost, setLoading, toggleLike, toggleRepost, incrementViews } = feedSlice.actions;
 export default feedSlice.reducer;
