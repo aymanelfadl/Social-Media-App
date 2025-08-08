@@ -1,57 +1,52 @@
 import Link from "next/link";
-import { Home, Search, Mail, User, Feather } from "lucide-react";
+import { useRouter } from "next/router";
+import { Home, Search, MessageSquare, User, LogIn } from "lucide-react";
+
+const links = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/explore", label: "Explore", icon: Search },
+  { href: "/messages/page", label: "Messages", icon: MessageSquare },
+  { href: "/profile/page", label: "Profile", icon: User },
+  { href: "/auth/login", label: "Log in", icon: LogIn },
+];
 
 export default function Sidebar() {
+  const router = useRouter();
   return (
-    <aside className="h-full px-2 py-3 flex flex-col">
-      <nav className="flex flex-col gap-1 pr-2">
-        <Link
-          href="/"
-          className="flex items-center gap-4 rounded-full px-4 py-3 text-lg font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        >
-          <Home size={24} />{" "}
-          <span className="hidden xl:inline">Home</span>
-        </Link>
-        <Link
-          href="/explore"
-          className="flex items-center gap-4 rounded-full px-4 py-3 text-lg font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        >
-          <Search size={24} />{" "}
-          <span className="hidden xl:inline">Explore</span>
-        </Link>
-        <Link
-          href="/messages"
-          className="flex items-center gap-4 rounded-full px-4 py-3 text-lg font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        >
-          <span className="relative inline-flex">
-            <Mail size={24} />
-            <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-semibold text-white">
-              3
-            </span>
-          </span>
-          <span className="hidden xl:inline">Messages</span>
-        </Link>
-        <Link
-          href="/profile"
-          className="flex items-center gap-4 rounded-full px-4 py-3 text-lg font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        >
-          <User size={24} />{" "}
-          <span className="hidden xl:inline">Profile</span>
-        </Link>
-      </nav>
-      <div className="mt-3">
-        <button className="w-full rounded-full bg-sky-500 px-6 py-3 text-center text-white hover:bg-sky-600 flex items-center justify-center gap-2">
-          <Feather size={18} />{" "}
-          <span className="hidden xl:inline">Post</span>
-        </button>
+    <nav className="sticky top-[4.25rem] space-y-2">
+      <div className="flex items-center gap-2 px-3 py-2">
+        <div className="h-10 w-10 rounded-2xl bg-sky-500" />
+        <span className="text-xl font-bold">Social App</span>
       </div>
-      <div className="mt-auto flex items-center gap-3 rounded-2xl p-3 hover:bg-neutral-100 dark:hover:bg-neutral-900 cursor-pointer">
-        <div className="h-10 w-10 rounded-full bg-neutral-300" />
-        <div className="hidden xl:block">
-          <p className="font-medium leading-tight">You</p>
-          <p className="text-neutral-500">@you</p>
-        </div>
+      <ul className="space-y-1">
+        {links.map((l) => {
+          const Icon = l.icon;
+          const active = router.pathname === l.href;
+          return (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className={`flex items-center gap-3 rounded-full px-4 py-3 text-[15px] transition-colors ${
+                  active
+                    ? "bg-neutral-100 dark:bg-neutral-900 font-semibold"
+                    : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{l.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="px-4 pt-2">
+        <Link
+          href="/auth/register"
+          className="inline-flex w-full items-center justify-center rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-600"
+        >
+          Create account
+        </Link>
       </div>
-    </aside>
+    </nav>
   );
 }

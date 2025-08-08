@@ -5,7 +5,6 @@ import { Provider, useSelector } from "react-redux";
 import { store, type RootState } from "@/store";
 import { useEffect, type ReactNode } from "react";
 
-// Helper component to sync theme to <html>
 function ThemeSync({ children }: { children: ReactNode }) {
   const theme = useSelector((state: RootState) => state.ui.theme);
   useEffect(() => {
