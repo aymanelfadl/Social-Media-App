@@ -14,10 +14,8 @@ export default function Explore() {
   const loadTrendingPosts = useCallback(() => {
     setLoading(true);
     
-    // Load trending posts with higher number to get more variety
     fetchDemoPosts(10)
       .then(postData => {
-        // Sort by metrics to get the "trending" posts
         const trendingPosts = [...postData].sort((a, b) => 
           (b.metrics.likes + b.metrics.views) - (a.metrics.likes + a.metrics.views)
         );

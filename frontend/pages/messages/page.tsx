@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildDemoConversations, buildDemoThread, type DemoConversation, type DemoMessage } from "@/lib/demo";
-import { isLoggedIn } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 
 export default function Messages() {
   const router = useRouter();
@@ -11,27 +12,21 @@ export default function Messages() {
   const [messages, setMessages] = useState<DemoMessage[]>([]);
   const [draft, setDraft] = useState("");
   const tickerRef = useRef<number | null>(null);
-  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
+  
+  // Get authentication state from Redux
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const activeConv = useMemo(() => convs.find((c) => c.id === activeId), [convs, activeId]);
 
+  // Redirect if not authenticated
   useEffect(() => {
-    // Check authentication on client-side
-    const checkAuth = () => {
-      const isAuth = isLoggedIn();
-      setAuthenticated(isAuth);
-      
-      // Middleware will handle redirection, but this is a backup
-      if (!isAuth) {
-        router.push('/auth/login?from=/messages/page');
-      }
-    };
-    
-    checkAuth();
-  }, [router]);
+    if (!isAuthenticated) {
+      router.push('/auth/login?from=/messages/page');
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
-    if (authenticated) {
+    if (isAuthenticated) {
       buildDemoConversations(8).then((c) => {
         setConvs(c);
         if (c[0]) setActiveId(c[0].id);
@@ -40,13 +35,12 @@ export default function Messages() {
     return () => {
       if (tickerRef.current) window.clearInterval(tickerRef.current);
     };
-  }, [authenticated]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!activeConv) return;
     buildDemoThread(activeConv.id, activeConv.peer).then((msgs) => setMessages(msgs));
     if (tickerRef.current) window.clearInterval(tickerRef.current);
-    // Simulate an incoming message every ~12s
     tickerRef.current = window.setInterval(() => {
       setMessages((prev) => [
         ...prev,
@@ -82,8 +76,7 @@ export default function Messages() {
     setDraft("");
   };
 
-  // If not authenticated, show a message with a link to login or explore
-  if (!authenticated) {
+  if (!isAuthenticated) {
     return (
       <div className="p-8 text-center">
         <h2 className="text-2xl font-bold mb-4">Sign In to View Messages</h2>

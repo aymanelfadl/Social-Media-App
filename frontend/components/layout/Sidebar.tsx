@@ -1,24 +1,18 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Home, Search, MessageSquare, User, LogIn, LogOut, SunMedium, Moon } from "lucide-react";
-import { isLoggedIn, logoutUser } from "@/lib/auth";
+import { logoutUser } from "@/lib/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/features/ui/uiSlice";
+import { logout } from "@/features/auth/authSlice";
 import type { RootState } from "@/store";
 
 export default function Sidebar() {
   const router = useRouter();
-  const [authed, setAuthed] = useState(false);
   const dispatch = useDispatch();
   const theme = useSelector((s: RootState) => s.ui.theme);
-
-  useEffect(() => {
-    const update = () => setAuthed(isLoggedIn());
-    update();
-    document.addEventListener("visibilitychange", update);
-    return () => document.removeEventListener("visibilitychange", update);
-  }, []);
+  const { isAuthenticated: authed } = useSelector((s: RootState) => s.auth);
 
   const links = [
     { href: "/", label: "Home", icon: Home },
@@ -27,8 +21,22 @@ export default function Sidebar() {
     { href: "/profile/page", label: "Profile", icon: User },
   ];
 
+  // Auth event listener
+  useEffect(() => {
+    const handleLogoutEvent = () => {
+      dispatch(logout());
+    };
+    
+    window.addEventListener('auth-logout', handleLogoutEvent);
+    
+    return () => {
+      window.removeEventListener('auth-logout', handleLogoutEvent);
+    };
+  }, [dispatch]);
+
   const handleLogout = () => {
     logoutUser();
+    dispatch(logout());
     router.replace("/auth/login");
   };
 

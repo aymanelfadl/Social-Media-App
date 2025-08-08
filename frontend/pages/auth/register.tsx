@@ -3,10 +3,13 @@ import Card from "@/components/ui/Card";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import { setAuthToken } from "@/lib/auth";
+import { loginUser } from "@/lib/auth";
+import { useDispatch } from "react-redux";
+import { login } from "@/features/auth/authSlice";
 
 export default function Register() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (e: FormEvent) => {
@@ -17,25 +20,31 @@ export default function Register() {
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
     
-    // Create user token and profile
-    const userToken = crypto.randomUUID();
-    setAuthToken(userToken, 7);
-    
-    // Save user profile data
+    // Create user profile data
     const userProfile = {
-      id: userToken,
       name: name,
+      email: email,
       handle: name.toLowerCase().replace(/\s+/g, ''),
       bio: '',
       avatarUrl: '',
       bannerUrl: ''
     };
     
-    // Save to localStorage
-    localStorage.setItem(`user_${userToken}`, JSON.stringify(userProfile));
-    
-    router.replace("/");
+    try {
+      // Login user and get token
+      const token = loginUser(userProfile);
+      
+      // Update Redux state
+      dispatch(login({ user: { ...userProfile, id: token } }));
+      
+      // Navigate to home page
+      router.replace("/");
+    } catch (error) {
+      console.error("Registration error:", error);
+      setLoading(false);
+    }
   };
 
   return (

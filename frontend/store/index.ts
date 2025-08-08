@@ -3,6 +3,7 @@ import uiReducer from "@/features/ui/uiSlice";
 import feedReducer from "@/features/feed/feedSlice";
 import profileReducer from "@/features/profile/profileSlice";
 import messagesReducer from "@/features/messages/messagesSlice";
+import authReducer from "@/features/auth/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     feed: feedReducer,
     profile: profileReducer,
     messages: messagesReducer,
+    auth: authReducer,
   },
 });
 

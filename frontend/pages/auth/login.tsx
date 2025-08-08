@@ -3,20 +3,44 @@ import Card from "@/components/ui/Card";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import { setAuthToken } from "@/lib/auth";
+import { loginUser } from "@/lib/auth";
+import { useDispatch } from "react-redux";
+import { login } from "@/features/auth/authSlice";
 
 export default function Login() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    // Demo auth: set a token cookie and redirect
-    setAuthToken(crypto.randomUUID(), 7);
-    const to = (router.query.from as string) || "/";
-    router.replace(to);
+    
+    // Get form data
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get('email') as string;
+    
+    try {
+      // For demo purposes, create a simple user profile
+      const userProfile = {
+        name: email.split('@')[0],
+        email: email,
+        handle: email.split('@')[0].toLowerCase(),
+      };
+      
+      // Login the user
+      const token = loginUser(userProfile);
+      
+      // Update Redux state
+      dispatch(login({ user: { ...userProfile, id: token } }));
+      
+      // Redirect
+      const to = (router.query.from as string) || "/";
+      router.replace(to);
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoading(false);
+    }
   };
 
   return (

@@ -47,12 +47,10 @@ export default function Home()
       
       const token = getAuthToken();
       if (token) {
-        // Load user-specific posts if logged in
         getUserPosts(token, 8)
           .then((userPosts) => dispatch(setPosts(userPosts)))
           .finally(() => setLoading(false));
       } else {
-        // Fallback to demo posts if token is missing
         fetchDemoPosts(8)
           .then((demo) => dispatch(setPosts(demo)))
           .finally(() => setLoading(false));

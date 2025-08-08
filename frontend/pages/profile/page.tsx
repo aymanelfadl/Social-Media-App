@@ -40,18 +40,13 @@ export default function Profile() {
   const likedPosts = useMemo(() => posts.filter((p) => p.liked), [posts]);
 
   useEffect(() => {
-    // Check authentication on client-side
     const checkAuth = () => {
       const isAuth = isLoggedIn();
       setAuthenticated(isAuth);
-      
-      // Middleware will handle redirection, but this is a backup
       if (!isAuth) {
         router.push('/auth/login?from=/profile/page');
         return;
       }
-      
-      // Load user profile data
       const userProfile = getUserProfile();
       if (userProfile) {
         dispatch({ 
@@ -74,7 +69,6 @@ export default function Profile() {
     }
   }, [authenticated]);
 
-  // If not authenticated, show a message with a link to login or explore
   if (!authenticated) {
     return (
       <div className="p-8 text-center">
@@ -186,14 +180,6 @@ export default function Profile() {
               {likedPosts.map((p) => (
                 <div key={p.id}>
                   <PostCard post={p} />
-                  <div className="px-4 pb-3">
-                    <button
-                      onClick={() => dispatch(toggleLike({ id: p.id }))}
-                      className="rounded-full border px-3 py-1.5 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
-                    >
-                      Unlike
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
@@ -203,7 +189,6 @@ export default function Profile() {
 
       <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
 
-      {/* Followers Modal */}
       {showFollowers && (
         <div className="fixed inset-0 z-50">
           <div
