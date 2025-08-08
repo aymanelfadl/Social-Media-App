@@ -1,6 +1,6 @@
 import type { Post } from "@/features/feed/feedSlice";
 
-type DemoUser = {
+export type DemoUser = {
   id: string;
   name: string;
   handle: string;

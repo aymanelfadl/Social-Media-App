@@ -6,6 +6,7 @@ import { store, type RootState } from "@/store";
 import { useEffect, type ReactNode } from "react";
 import { isLoggedIn } from "@/lib/auth";
 import { setAuthStatus, login, logout } from "@/features/auth/authSlice";
+import type { AuthUser } from "@/features/auth/authSlice";
 
 function ThemeSync({ children }: { children: ReactNode }) {
   const theme = useSelector((state: RootState) => state.ui.theme);
@@ -27,8 +28,8 @@ function AuthSync({ children }: { children: ReactNode }) {
       dispatch(setAuthStatus(authenticated));
     };
     
-    const handleLogin = (e: any) => {
-      const { userData } = e.detail;
+    const handleLogin = (e: Event) => {
+      const { userData } = (e as CustomEvent<{ userData: AuthUser }>).detail;
       dispatch(login({ user: userData }));
     };
     

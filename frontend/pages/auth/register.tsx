@@ -19,7 +19,6 @@ export default function Register() {
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
     
     const userProfile = {
       id : crypto.randomUUID(),

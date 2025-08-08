@@ -3,7 +3,7 @@ import Card from "@/components/ui/Card";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import { loginUser, UserProfile } from "@/lib/auth";
+import { loginUser } from "@/lib/auth";
 import { useDispatch } from "react-redux";
 import { login } from "@/features/auth/authSlice";
 

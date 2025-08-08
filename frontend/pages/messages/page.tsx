@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
+import Image from "next/image";
 
 export default function Messages() {
   const router = useRouter();
@@ -56,7 +57,11 @@ export default function Messages() {
           .sort((a, b) => +new Date(b.lastMessageAt) - +new Date(a.lastMessageAt)),
       );
     }, 12000);
-  }, [activeConv?.id]);
+
+    return () => {
+      if (tickerRef.current) window.clearInterval(tickerRef.current);
+    };
+  }, [activeConv]);
 
   const onSend = () => {
     const t = draft.trim();
@@ -111,7 +116,7 @@ export default function Messages() {
               }`}
             >
               <div className="h-10 w-10 rounded-full bg-neutral-300 overflow-hidden">
-                <img src={c.peer.avatarUrl} alt={c.peer.name} className="h-10 w-10 object-cover" />
+                <Image src={c.peer.avatarUrl} alt={c.peer.name} width={40} height={40} className="h-10 w-10 object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium leading-tight truncate">{c.peer.name}</p>
@@ -133,7 +138,7 @@ export default function Messages() {
           {activeConv ? (
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-full bg-neutral-300 overflow-hidden">
-                <img src={activeConv.peer.avatarUrl} alt={activeConv.peer.name} className="h-8 w-8 object-cover" />
+                <Image src={activeConv.peer.avatarUrl} alt={activeConv.peer.name} width={32} height={32} className="h-8 w-8 object-cover" />
               </div>
               <div>
                 <h2 className="text-lg font-bold leading-tight">{activeConv.peer.name}</h2>

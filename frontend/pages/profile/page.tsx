@@ -5,12 +5,13 @@ import EditProfileModal from "@/components/profile/EditProfileModal";
 import UserList from "@/components/profile/UserList";
 import PostCard from "@/components/feed/Post";
 import { Trash2 } from "lucide-react";
-import { fetchDemoUsers } from "@/lib/demo";
+import { fetchDemoUsers, type DemoUser } from "@/lib/demo";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
 import { useEffect, useMemo, useState } from "react";
 import { isLoggedIn, getUserProfile } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
@@ -27,11 +28,10 @@ export default function Profile()
   const [editOpen, setEditOpen] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
 
-  const [followers, setFollowers] = useState<any[]>([]);
-  const [following, setFollowing] = useState<any[]>([]);
+  const [followers, setFollowers] = useState<DemoUser[]>([]);
+  const [following, setFollowing] = useState<DemoUser[]>([]);
 
   const myPosts = useMemo(
     () => posts.filter((p) => p.author.handle.toLowerCase() === me.handle.toLowerCase()),
@@ -64,7 +64,6 @@ export default function Profile()
       Promise.all([fetchDemoUsers(8), fetchDemoUsers(6)]).then(([f1, f2]) => {
         setFollowers(f1);
         setFollowing(f2);
-        setLoading(false);
       });
     }
   }, [authenticated]);
@@ -159,7 +158,7 @@ export default function Profile()
                     key={m.id}
                     className="group relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800"
                   >
-                    <img src={m.url} alt="media" className="w-full h-full object-cover" />
+                    <Image src={m.url} alt="media" width={600} height={400} className="w-full h-full object-cover" unoptimized />
                     <button
                       onClick={() => dispatch(removeMedia({ id: m.id }))}
                       className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white opacity-0 transition-opacity group-hover:opacity-100"

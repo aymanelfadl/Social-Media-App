@@ -8,6 +8,7 @@ import { fetchDemoPosts, getUserPosts } from "@/lib/demo";
 import { isLoggedIn, getAuthToken } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home()
 {
@@ -123,9 +124,11 @@ export default function Home()
       <div className="border-b border-neutral-200 dark:border-neutral-800 p-4">
         <div className="flex gap-3">
            {profile.avatarUrl ? (
-            <img
+            <Image
               src={profile.avatarUrl}
               alt={profile.name}
+              width={48}
+              height={48}
               className="h-12 w-12 rounded-full shrink-0 object-cover"
             />
           ) : (
@@ -135,7 +138,7 @@ export default function Home()
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="What is happening?!"
+              placeholder="What&#39;s happening?!"
               rows={3}
               className="w-full resize-none bg-transparent outline-none placeholder:text-neutral-500"
             />
@@ -176,10 +179,13 @@ export default function Home()
 
             {previewUrl && (
               <div className="mt-3 relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
-                <img
+                <Image
                   src={previewUrl}
                   alt="Selected image preview"
+                  width={1200}
+                  height={675}
                   className="w-full h-auto object-cover"
+                  unoptimized
                 />
                 <button
                   onClick={clearImage}
@@ -194,7 +200,7 @@ export default function Home()
             {!previewUrl && (
               <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
                 <ImageIcon className="h-4 w-4" />
-                Click "Add Image" to upload a photo.
+                Click &quot;Add Image&quot; to upload a photo.
               </div>
             )}
           </div>

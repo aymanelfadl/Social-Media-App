@@ -4,7 +4,6 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <title>Social Media App</title>
         <meta name="description" content="Connect with friends and the world around you on Social Media App" />
         <link rel="icon" href="/images/logo.png" />
         <link rel="apple-touch-icon" href="/images/logo.png" />
