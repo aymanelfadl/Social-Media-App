@@ -1,13 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store";
+import ProfileHeader from "@/components/profile/ProfileHeader";
 import EditProfileModal from "@/components/profile/EditProfileModal";
-import { useEffect, useMemo, useState } from "react";
-import { removeMedia, removeReply } from "@/features/profile/profileSlice";
-import { toggleLike } from "@/features/feed/feedSlice";
-import PostCard from "@/components/feed/Post";
 import UserList from "@/components/profile/UserList";
+import PostCard from "@/components/feed/Post";
 import { Trash2 } from "lucide-react";
 import { fetchDemoUsers } from "@/lib/demo";
+import { removeMedia, removeReply } from "@/features/profile/profileSlice";
+import { toggleLike } from "@/features/feed/feedSlice";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
@@ -40,67 +41,25 @@ export default function Profile() {
       setLoading(false);
     });
   }, []);
+
+  const toggleFollow = (id: string) => {
+    // example if you want to add toggling follow here (not in original code)
+  };
+
   return (
     <div>
-      <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
-        {me.bannerUrl && (
-          <img
-            src={me.bannerUrl}
-            alt="banner"
-            className="h-full w-full object-cover"
-          />
-        )}
-      </div>
+      <ProfileHeader onEditClick={() => setEditOpen(true)} />
 
-      <div className="px-4">
-        <div className="-mt-16 flex items-end justify-between relative">
-          {/* Profile image above the banner */}
-          <div className="absolute -top-12 left-4">
-            <div className="h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300 overflow-hidden">
-              {me.avatarUrl && (
-                <img
-                  src={me.avatarUrl}
-                  alt={me.name}
-                  className="h-24 w-24 object-cover"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="flex-1 flex justify-end">
-            <button
-              onClick={() => setEditOpen(true)}
-              className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
-            >
-              Edit profile
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-12">
-          <h1 className="text-xl font-bold leading-tight">{me.name}</h1>
-          <p className="text-neutral-500">@{me.handle}</p>
-        </div>
-
-        <div className="mt-4">
-          {me.bio && <p className="text-sm text-neutral-700 dark:text-neutral-300">{me.bio}</p>}
-          <div className="mt-2 text-sm text-neutral-500 flex gap-4">
-            <button onClick={() => setShowFollowing(true)} className="hover:underline">
-              <span className="font-semibold text-[var(--color-foreground)]">{following.length}</span> Following
-            </button>
-            <button onClick={() => setShowFollowers(true)} className="hover:underline">
-              <span className="font-semibold text-[var(--color-foreground)]">{followers.length}</span> Followers
-            </button>
-          </div>
-        </div>
-
+      <div className="px-4 mt-6">
         <div className="mt-4 border-b border-neutral-200 dark:border-neutral-800">
           <ul className="flex">
             {(["Posts", "Replies", "Media", "Likes"] as Tab[]).map((t) => (
               <li
                 key={t}
                 onClick={() => setTab(t)}
-                className={`flex-1 cursor-pointer py-3 text-center transition-colors hover:bg-neutral-50 dark:hover:bg-white/5 ${tab === t ? "font-semibold" : ""}`}
+                className={`flex-1 cursor-pointer py-3 text-center transition-colors hover:bg-neutral-50 dark:hover:bg-white/5 ${
+                  tab === t ? "font-semibold" : ""
+                }`}
               >
                 <span className="text-sm">{t}</span>
               </li>

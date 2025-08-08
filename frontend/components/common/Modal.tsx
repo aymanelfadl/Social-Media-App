@@ -29,7 +29,7 @@ export default function Modal({
         <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/95 shadow-xl">
           {title && (
             <div className="border-b border-neutral-200 dark:border-neutral-800 px-4 py-3">
-              <h3 className="text-lg font-bold">{title}</h3>
+              <h3 className="text-lg font-bold text-black">{title}</h3>
             </div>
           )}
           <div className="p-4">{children}</div>

@@ -33,7 +33,6 @@ export default function EditProfileModal({
   return (
     <Modal open={open} onClose={onClose} title="Edit profile">
       <div className="space-y-5">
-        {/* Name */}
         <div>
           <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Name

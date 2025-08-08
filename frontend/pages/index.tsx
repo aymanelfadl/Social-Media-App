@@ -85,7 +85,6 @@ export default function Home() {
 
             {imageUrl.trim() && (
               <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imageUrl.trim()} alt="preview" className="w-full h-auto object-cover" onError={() => setImageUrl("")} />
               </div>
             )}
