@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import { fetchTrendingImages } from "@/lib/demo";
 import PostCard from "@/components/feed/Post";
 import type { Post } from "@/features/feed/feedSlice";
+import { isLoggedIn } from "@/lib/auth";
+import Link from "next/link";
 
 export default function Explore() {
   const [images, setImages] = useState<string[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
   useEffect(() => {
     fetchTrendingImages(8).then(setImages);
+    // Check if user is logged in (client-side only)
+    setIsAuthenticated(isLoggedIn());
   }, []);
 
   const mock: Post = {
@@ -20,6 +26,25 @@ export default function Explore() {
 
   return (
     <div>
+      {!isAuthenticated && (
+        <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black p-4">
+          <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold">Welcome to Social App</h2>
+              <p className="text-neutral-600 dark:text-neutral-400">Sign up to see your personalized feed, like posts, and connect with others.</p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/auth/login" className="inline-flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-800 bg-transparent px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-white/5">
+                Log in
+              </Link>
+              <Link href="/auth/register" className="inline-flex items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
+                Sign up
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="sticky top-0 z-10 border-b border-neutral-200/80 dark:border-neutral-800/80 bg-transparent backdrop-blur px-4 py-3">
         <input
           type="search"

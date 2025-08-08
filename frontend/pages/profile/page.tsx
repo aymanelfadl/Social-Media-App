@@ -9,11 +9,15 @@ import { fetchDemoUsers } from "@/lib/demo";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
 import { toggleLike } from "@/features/feed/feedSlice";
 import { useEffect, useMemo, useState } from "react";
+import { isLoggedIn } from "@/lib/auth";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
 export default function Profile() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const me = useSelector((s: RootState) => s.profile.me);
   const replies = useSelector((s: RootState) => s.profile.replies);
   const media = useSelector((s: RootState) => s.profile.media);
@@ -24,6 +28,7 @@ export default function Profile() {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
 
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
@@ -35,12 +40,47 @@ export default function Profile() {
   const likedPosts = useMemo(() => posts.filter((p) => p.liked), [posts]);
 
   useEffect(() => {
-    Promise.all([fetchDemoUsers(8), fetchDemoUsers(6)]).then(([f1, f2]) => {
-      setFollowers(f1);
-      setFollowing(f2);
-      setLoading(false);
-    });
-  }, []);
+    // Check authentication on client-side
+    const checkAuth = () => {
+      const isAuth = isLoggedIn();
+      setAuthenticated(isAuth);
+      
+      // Middleware will handle redirection, but this is a backup
+      if (!isAuth) {
+        router.push('/auth/login?from=/profile/page');
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (authenticated) {
+      Promise.all([fetchDemoUsers(8), fetchDemoUsers(6)]).then(([f1, f2]) => {
+        setFollowers(f1);
+        setFollowing(f2);
+        setLoading(false);
+      });
+    }
+  }, [authenticated]);
+
+  // If not authenticated, show a message with a link to login or explore
+  if (!authenticated) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Please Sign In</h2>
+        <p className="mb-6">You need to be logged in to view and manage your profile.</p>
+        <div className="flex justify-center gap-4">
+          <Link href="/auth/login?from=/profile/page" className="rounded-full bg-sky-500 px-6 py-2 text-white font-medium hover:bg-sky-600">
+            Log in
+          </Link>
+          <Link href="/explore" className="rounded-full border border-neutral-200 dark:border-neutral-800 px-6 py-2 font-medium hover:bg-neutral-50 dark:hover:bg-white/5">
+            Explore
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

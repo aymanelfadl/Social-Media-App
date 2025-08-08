@@ -1,24 +1,46 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildDemoConversations, buildDemoThread, type DemoConversation, type DemoMessage } from "@/lib/demo";
+import { isLoggedIn } from "@/lib/auth";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Messages() {
+  const router = useRouter();
   const [convs, setConvs] = useState<DemoConversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<DemoMessage[]>([]);
   const [draft, setDraft] = useState("");
   const tickerRef = useRef<number | null>(null);
+  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
 
   const activeConv = useMemo(() => convs.find((c) => c.id === activeId), [convs, activeId]);
 
   useEffect(() => {
-    buildDemoConversations(8).then((c) => {
-      setConvs(c);
-      if (c[0]) setActiveId(c[0].id);
-    });
+    // Check authentication on client-side
+    const checkAuth = () => {
+      const isAuth = isLoggedIn();
+      setAuthenticated(isAuth);
+      
+      // Middleware will handle redirection, but this is a backup
+      if (!isAuth) {
+        router.push('/auth/login?from=/messages/page');
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (authenticated) {
+      buildDemoConversations(8).then((c) => {
+        setConvs(c);
+        if (c[0]) setActiveId(c[0].id);
+      });
+    }
     return () => {
       if (tickerRef.current) window.clearInterval(tickerRef.current);
     };
-  }, []);
+  }, [authenticated]);
 
   useEffect(() => {
     if (!activeConv) return;
@@ -59,6 +81,24 @@ export default function Messages() {
     ]);
     setDraft("");
   };
+
+  // If not authenticated, show a message with a link to login or explore
+  if (!authenticated) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Sign In to View Messages</h2>
+        <p className="mb-6">You need to be logged in to access your messages.</p>
+        <div className="flex justify-center gap-4">
+          <Link href="/auth/login?from=/messages/page" className="rounded-full bg-sky-500 px-6 py-2 text-white font-medium hover:bg-sky-600">
+            Log in
+          </Link>
+          <Link href="/explore" className="rounded-full border border-neutral-200 dark:border-neutral-800 px-6 py-2 font-medium hover:bg-neutral-50 dark:hover:bg-white/5">
+            Explore
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-12 min-h-[70vh]">

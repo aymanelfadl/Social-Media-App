@@ -18,12 +18,20 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("auth_token")?.value;
 
   const isAuthPage = pathname.startsWith("/auth");
+  const isExplorePage = pathname.startsWith("/explore");
   const isProtected =
     pathname === "/" ||
     pathname.startsWith("/messages") ||
     pathname.startsWith("/profile");
 
-  if (!token && isProtected) {
+  if (!token && pathname === "/") {
+    // Redirect first-time visitors to explore page instead of login
+    const url = req.nextUrl.clone();
+    url.pathname = "/explore";
+    return NextResponse.redirect(url);
+  }
+  
+  if (!token && isProtected && !isExplorePage) {
     const url = req.nextUrl.clone();
     url.pathname = "/auth/login";
     url.searchParams.set("from", pathname);

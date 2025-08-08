@@ -5,9 +5,13 @@ import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
 import { Feather, Image as ImageIcon, X } from "lucide-react";
 import { fetchDemoPosts } from "@/lib/demo";
+import { isLoggedIn } from "@/lib/auth";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Home() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const posts = useSelector((s: RootState) => s.feed.posts);
@@ -17,19 +21,35 @@ export default function Home() {
   const [text, setText] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
 
   const maxLen = 280;
   const remaining = maxLen - text.length;
   const over = remaining < 0;
 
   useEffect(() => {
-    if (posts.length === 0) {
+    // Check authentication on client-side
+    const checkAuth = () => {
+      const isAuth = isLoggedIn();
+      setAuthenticated(isAuth);
+      
+      // Redirect to explore if not authenticated
+      if (!isAuth) {
+        router.push('/explore');
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    if (authenticated && posts.length === 0) {
       setLoading(true);
       fetchDemoPosts(8)
         .then((demo) => dispatch(setPosts(demo)))
         .finally(() => setLoading(false));
     }
-  }, [dispatch, posts.length]);
+  }, [dispatch, posts.length, authenticated]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -73,6 +93,24 @@ export default function Home() {
     setText("");
     clearImage();
   };
+
+  // If not authenticated, show a message with a link to login or explore
+  if (!authenticated) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Welcome to Social App</h2>
+        <p className="mb-6">Please sign in to view your personalized feed and create posts.</p>
+        <div className="flex justify-center gap-4">
+          <Link href="/auth/login" className="rounded-full bg-sky-500 px-6 py-2 text-white font-medium hover:bg-sky-600">
+            Log in
+          </Link>
+          <Link href="/explore" className="rounded-full border border-neutral-200 dark:border-neutral-800 px-6 py-2 font-medium hover:bg-neutral-50 dark:hover:bg-white/5">
+            Explore
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
