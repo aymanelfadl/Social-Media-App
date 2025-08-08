@@ -9,7 +9,8 @@ import { isLoggedIn } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-export default function Home() {
+export default function Home()
+{
   const dispatch = useDispatch();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,19 +22,17 @@ export default function Home() {
   const [text, setText] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
+  const [authenticated, setAuthenticated] = useState(true);
 
   const maxLen = 280;
   const remaining = maxLen - text.length;
   const over = remaining < 0;
 
-  useEffect(() => {
-    // Check authentication on client-side
+  useEffect(() =>
+  {
     const checkAuth = () => {
       const isAuth = isLoggedIn();
       setAuthenticated(isAuth);
-      
-      // Redirect to explore if not authenticated
       if (!isAuth) {
         router.push('/explore');
       }
@@ -94,7 +93,6 @@ export default function Home() {
     clearImage();
   };
 
-  // If not authenticated, show a message with a link to login or explore
   if (!authenticated) {
     return (
       <div className="p-8 text-center">
@@ -146,7 +144,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm hover:bg-black/20 cursor-pointer"
                   aria-label="Add image"
                 >
                   <ImageIcon size={16} />

@@ -69,50 +69,6 @@ export default function EditProfileModal({
           />
         </div>
 
-        {/* Avatar URL */}
-        <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
-            Avatar URL
-          </label>
-          <input
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
-          />
-          {avatarUrl && (
-            <div className="mt-3 h-16 w-16 overflow-hidden rounded-full border border-neutral-300 dark:border-neutral-800 shadow-sm">
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                className="h-16 w-16 object-cover"
-                onError={() => setAvatarUrl("")}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Banner URL */}
-        <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
-            Banner URL
-          </label>
-          <input
-            value={bannerUrl}
-            onChange={(e) => setBannerUrl(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
-          />
-          {bannerUrl && (
-            <div className="mt-3 h-24 overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-800 shadow-sm">
-              <img
-                src={bannerUrl}
-                alt="banner"
-                className="w-full h-24 object-cover"
-                onError={() => setBannerUrl("")}
-              />
-            </div>
-          )}
-        </div>
-
         {/* Actions */}
         <div className="flex justify-end gap-2 pt-2">
           <button

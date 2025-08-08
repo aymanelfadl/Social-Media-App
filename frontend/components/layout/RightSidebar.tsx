@@ -25,7 +25,7 @@ export default function RightSidebar() {
 
   return (
    <div className="sticky top-[1.25rem] h-[calc(100vh-1.25rem)] overflow-y-auto space-y-3 p-4">
-  <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 backdrop-blur p-3 bg-blue-50">
+  <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 backdrop-blur p-3">
     <h3 className="mb-3 text-lg font-bold">Search...</h3>
     <input
       type="search"
@@ -33,7 +33,7 @@ export default function RightSidebar() {
       className="w-full rounded-full border border-neutral-200 dark:border-neutral-800 px-4 py-2 text-sm outline-none"
     />
   </div>
-  <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-blue-50 p-4">
+  <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-4">
     <h3 className="mb-3 text-lg font-bold">What’s happening</h3>
     {loadingTrends && <div className="text-sm text-neutral-500">Loading…</div>}
     <ul className="space-y-2 p-1">
