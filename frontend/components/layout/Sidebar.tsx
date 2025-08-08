@@ -36,7 +36,7 @@ export default function Sidebar() {
     <nav className="sticky top-[4.25rem] space-y-2">
       <div className="flex items-center justify-between px-3 py-2">
         <div className="flex items-center gap-2">
-          <div className="h-10 w-10 rounded-2xl bg-sky-500" />
+          <img src="/images/logo.png" alt="Social App Logo" className="h-10 w-10 rounded-2xl object-cover" />
           <span className="text-xl font-bold">Social App</span>
         </div>
         <button

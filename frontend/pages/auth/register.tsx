@@ -12,8 +12,6 @@ export default function Register() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    // Demo register: set a token cookie and redirect home
     setAuthToken(crypto.randomUUID(), 7);
     router.replace("/");
   };
