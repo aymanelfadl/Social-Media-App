@@ -8,7 +8,10 @@ import { fetchDemoPosts } from "@/lib/demo";
 
 export default function Home() {
   const dispatch = useDispatch();
+
   const posts = useSelector((s: RootState) => s.feed.posts);
+  const profile = useSelector((s: RootState) => s.profile.me);
+
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -36,7 +39,7 @@ export default function Home() {
     if (!canPost) return;
     const newPost: Post = {
       id: Math.random().toString(36).slice(2),
-      author: { name: "You", handle: "you" },
+      author: { name: profile.name, handle: profile.handle, avatarUrl: profile.avatarUrl },
       content: trimmed,
       createdAt: new Date().toISOString(),
       images: imageUrl ? [imageUrl.trim()] : undefined,
@@ -51,7 +54,15 @@ export default function Home() {
     <div>
       <div className="border-b border-neutral-200 dark:border-neutral-800 p-4">
         <div className="flex gap-3">
-          <div className="h-12 w-12 rounded-full bg-neutral-300 shrink-0" />
+           {profile.avatarUrl ? (
+            <img
+              src={profile.avatarUrl}
+              alt={profile.name}
+              className="h-12 w-12 rounded-full shrink-0 object-cover"
+            />
+          ) : (
+            <div className="h-12 w-12 rounded-full bg-neutral-300 shrink-0" />
+          )}
           <div className="flex-1">
             <textarea
               value={text}
@@ -85,7 +96,12 @@ export default function Home() {
 
             {imageUrl.trim() && (
               <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
-                <img src={imageUrl.trim()} alt="preview" className="w-full h-auto object-cover" onError={() => setImageUrl("")} />
+                <img
+                  src={imageUrl.trim()}
+                  alt="preview"
+                  className="w-full h-auto object-cover"
+                  onError={() => setImageUrl("")}
+                />
               </div>
             )}
 

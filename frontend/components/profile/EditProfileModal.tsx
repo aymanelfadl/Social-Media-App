@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMe } from "@/features/profile/profileSlice";
@@ -11,12 +11,23 @@ export default function EditProfileModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const dispatch = useDispatch();
   const me = useSelector((s: RootState) => s.profile.me);
+
+  // Sync local state with profile on open
   const [name, setName] = useState(me.name);
   const [bio, setBio] = useState(me.bio ?? "");
   const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ?? "");
   const [bannerUrl, setBannerUrl] = useState(me.bannerUrl ?? "");
-  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (open) {
+      setName(me.name);
+      setBio(me.bio ?? "");
+      setAvatarUrl(me.avatarUrl ?? "");
+      setBannerUrl(me.bannerUrl ?? "");
+    }
+  }, [open, me]);
 
   const onSave = () => {
     dispatch(
@@ -33,6 +44,7 @@ export default function EditProfileModal({
   return (
     <Modal open={open} onClose={onClose} title="Edit profile">
       <div className="space-y-5">
+        {/* Name */}
         <div>
           <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Name
@@ -68,8 +80,7 @@ export default function EditProfileModal({
             className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
           {avatarUrl && (
-            <div className="mt-3 h-16 w-16 overflow-hidden rounded-full border border-neutral-300 dark:text-black/90 shadow-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            <div className="mt-3 h-16 w-16 overflow-hidden rounded-full border border-neutral-300 dark:border-neutral-800 shadow-sm">
               <img
                 src={avatarUrl}
                 alt="avatar"
@@ -91,8 +102,7 @@ export default function EditProfileModal({
             className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
           {bannerUrl && (
-            <div className="mt-3 h-24 overflow-hidden rounded-lg border border-neutral-300 dark:text-black/90 shadow-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            <div className="mt-3 h-24 overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-800 shadow-sm">
               <img
                 src={bannerUrl}
                 alt="banner"

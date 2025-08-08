@@ -8,7 +8,7 @@ import { Trash2 } from "lucide-react";
 import { fetchDemoUsers } from "@/lib/demo";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
 import { toggleLike } from "@/features/feed/feedSlice";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
@@ -42,10 +42,6 @@ export default function Profile() {
     });
   }, []);
 
-  const toggleFollow = (id: string) => {
-    // example if you want to add toggling follow here (not in original code)
-  };
-
   return (
     <div>
       <ProfileHeader onEditClick={() => setEditOpen(true)} />
@@ -70,7 +66,9 @@ export default function Profile() {
         <div className="min-h-[40vh]">
           {tab === "Posts" && (
             <div>
-              {myPosts.length === 0 && <div className="p-4 text-sm text-neutral-500">You haven’t posted yet.</div>}
+              {myPosts.length === 0 && (
+                <div className="p-4 text-sm text-neutral-500">You haven’t posted yet.</div>
+              )}
               {myPosts.map((p) => (
                 <PostCard key={p.id} post={p} />
               ))}
@@ -82,10 +80,15 @@ export default function Profile() {
               {replies.length === 0 && <div className="p-4 text-sm text-neutral-500">No replies yet.</div>}
               <ul>
                 {replies.map((r) => (
-                  <li key={r.id} className="border-b border-neutral-200 dark:border-neutral-800 p-4">
+                  <li
+                    key={r.id}
+                    className="border-b border-neutral-200 dark:border-neutral-800 p-4"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="text-sm text-neutral-500">Replied · {new Date(r.createdAt).toLocaleDateString()}</div>
+                        <div className="text-sm text-neutral-500">
+                          Replied · {new Date(r.createdAt).toLocaleDateString()}
+                        </div>
                         <p className="mt-1 whitespace-pre-wrap">{r.content}</p>
                       </div>
                       <button
@@ -108,7 +111,10 @@ export default function Profile() {
               {media.length === 0 && <div className="text-sm text-neutral-500">No media yet.</div>}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {media.map((m) => (
-                  <div key={m.id} className="group relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
+                  <div
+                    key={m.id}
+                    className="group relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800"
+                  >
                     <img src={m.url} alt="media" className="w-full h-full object-cover" />
                     <button
                       onClick={() => dispatch(removeMedia({ id: m.id }))}
@@ -147,6 +153,7 @@ export default function Profile() {
 
       <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
 
+      {/* Followers Modal */}
       {showFollowers && (
         <div className="fixed inset-0 z-50">
           <div
