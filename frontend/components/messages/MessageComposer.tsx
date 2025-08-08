@@ -8,7 +8,7 @@ export default function MessageComposer({ conversationId }: { conversationId: st
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [images, setImages] = useState<string[]>([]);
-  const [typing, setTypingState] = useState(false);
+  const [isTyping, setTypingState] = useState(false);
   const typingTimeout = useRef<number | null>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
@@ -21,13 +21,13 @@ export default function MessageComposer({ conversationId }: { conversationId: st
   const emitTyping = async (value: boolean) => {
     setTypingState(value);
     try {
-      await setTyping(conversationId, value);
+      await setTyping();
     } catch {}
   };
 
   const onChange = (v: string) => {
     setText(v);
-    if (!typing) {
+    if (!isTyping) {
       emitTyping(true);
     }
     if (typingTimeout.current) window.clearTimeout(typingTimeout.current);

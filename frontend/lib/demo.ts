@@ -7,15 +7,34 @@ type DemoUser = {
   avatarUrl: string;
 };
 
+interface RandomUserResult {
+  login: {
+    uuid: string;
+  };
+  name: {
+    first: string;
+    last: string;
+  };
+  picture: {
+    medium: string;
+  };
+}
+
 export async function fetchDemoUsers(count = 12): Promise<DemoUser[]> {
   const res = await fetch(`https://randomuser.me/api/?results=${count}&inc=name,login,picture`);
   const { results } = await res.json();
-  return results.map((u: any) => ({
-    id: u.login.uuid as string,
-    name: `${u.name.first} ${u.name.last}` as string,
+  return results.map((u: RandomUserResult) => ({
+    id: u.login.uuid,
+    name: `${u.name.first} ${u.name.last}`,
     handle: `${u.name.first}${u.name.last}`.toLowerCase(),
-    avatarUrl: u.picture.medium as string,
+    avatarUrl: u.picture.medium,
   }));
+}
+
+interface JsonPlaceholderPost {
+  id: number;
+  title: string;
+  body: string;
 }
 
 export async function fetchDemoPosts(count = 8): Promise<Post[]> {
@@ -23,7 +42,7 @@ export async function fetchDemoPosts(count = 8): Promise<Post[]> {
     fetchDemoUsers(count),
     fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${count}`),
   ]);
-  const postsJson: any[] = await postsRes.json();
+  const postsJson: JsonPlaceholderPost[] = await postsRes.json();
 
   const now = Date.now();
   return postsJson.map((p, i): Post => {
@@ -107,16 +126,22 @@ export type PostComment = {
   createdAt: string;
 };
 
+interface JsonPlaceholderComment {
+  id: number;
+  postId: number;
+  body: string;
+}
+
 export async function fetchDemoComments(postId: string, count = 3): Promise<PostComment[]> {
   // Fetch from JSON placeholder API
   const res = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}&_limit=${count}`);
-  const comments = await res.json();
+  const comments: JsonPlaceholderComment[] = await res.json();
 
   // Get random users for the comments
   const commenters = await fetchDemoUsers(count);
 
   // Create demo comments with actual users
-  return comments.map((comment: any, index: number): PostComment => {
+  return comments.map((comment: JsonPlaceholderComment, index: number): PostComment => {
     const commenter = commenters[index % commenters.length]!;
     return {
       id: String(comment.id),
@@ -130,13 +155,21 @@ export async function fetchDemoComments(postId: string, count = 3): Promise<Post
   });
 }
 
+interface UserProfile {
+  id: string;
+  name: string;
+  handle: string;
+  avatarUrl?: string;
+  following?: string[];
+}
+
 // Function to get user-specific posts (posts from the user and those they follow)
 export async function getUserPosts(userId: string, count = 5): Promise<Post[]> {
   // First get some demo posts as a base
   const demoPosts = await fetchDemoPosts(count);
 
   // Get the user profile
-  let userProfile: any = null;
+  let userProfile: UserProfile | null = null;
   try {
     const userData = localStorage.getItem(`user_${userId}`);
     if (userData) {

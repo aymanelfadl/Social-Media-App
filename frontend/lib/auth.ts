@@ -29,8 +29,19 @@ export function getUserProfile() {
   }
 }
 
+interface UserProfile {
+  id: string;
+  name: string;
+  handle: string;
+  avatarUrl?: string;
+  bio?: string;
+  followingCount?: number;
+  followersCount?: number;
+  [key: string]: unknown;
+}
+
 // Function to save or update user profile data
-export function saveUserProfile(userData: any) {
+export function saveUserProfile(userData: UserProfile) {
   const token = getAuthToken();
   if (!token) return false;
   
@@ -52,7 +63,7 @@ export function saveUserProfile(userData: any) {
 }
 
 // Function to login a user
-export function loginUser(userData: any) {
+export function loginUser(userData: UserProfile) {
   // Generate a token if not provided
   const token = userData.id || crypto.randomUUID();
   

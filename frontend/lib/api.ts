@@ -50,24 +50,23 @@ export async function searchAll(query: string): Promise<{ users: SearchUser[]; p
   return { users, posts };
 }
 
-export async function followUser(userId: string): Promise<{ ok: boolean }> {
+export async function followUser(): Promise<{ ok: boolean }> {
   await delay(200);
   return { ok: true };
 }
-export async function unfollowUser(userId: string): Promise<{ ok: boolean }> {
+export async function unfollowUser(): Promise<{ ok: boolean }> {
   await delay(200);
   return { ok: true };
 }
-export async function likePost(_postId: string, _like: boolean): Promise<{ ok: boolean }> {
+export async function likePost(): Promise<{ ok: boolean }> {
   await delay(200);
   return { ok: true };
 }
-export async function repostPost(_postId: string, _repost: boolean): Promise<{ ok: boolean }> {
+export async function repostPost(): Promise<{ ok: boolean }> {
   await delay(200);
   return { ok: true };
 }
 
-/* Messaging stubs */
 
 export type ApiConversation = {
   id: string;
@@ -86,12 +85,12 @@ export type ApiMessage = {
   status: "sent" | "delivered" | "read";
 };
 
-let MOCK_CONVERSATIONS: ApiConversation[] = [
+const MOCK_CONVERSATIONS: ApiConversation[] = [
   { id: "c1", peer: { id: "u1", name: "Jane Doe", handle: "jane", avatarUrl: "/images/logo.png", online: true }, lastMessageAt: new Date().toISOString(), unreadCount: 1 },
   { id: "c2", peer: { id: "u2", name: "Dev Guy", handle: "devguy", avatarUrl: "/images/logo.png", online: false }, lastMessageAt: new Date(Date.now() - 86400000).toISOString(), unreadCount: 0 },
 ];
 
-let MOCK_MESSAGES: Record<string, ApiMessage[]> = {
+const MOCK_MESSAGES: Record<string, ApiMessage[]> = {
   c1: [
     { id: "m1", conversationId: "c1", senderId: "u1", text: "Hey there!", createdAt: new Date(Date.now() - 3600_000).toISOString(), status: "read" },
     { id: "m2", conversationId: "c1", senderId: "me", text: "Hi! What's up?", createdAt: new Date(Date.now() - 3500_000).toISOString(), status: "read" },
@@ -127,8 +126,14 @@ export async function sendMessage(conversationId: string, payload: { text: strin
     attachments: payload.attachments?.map((a, i) => ({ id: `att-${i}`, ...a })),
     status: "sent",
   };
-  if (!MOCK_MESSAGES[conversationId]) MOCK_MESSAGES[conversationId] = [];
-  MOCK_MESSAGES[conversationId].push(msg);
+  
+  // Create a copy of MOCK_MESSAGES
+  const updatedMessages = { ...MOCK_MESSAGES };
+  
+  if (!updatedMessages[conversationId]) updatedMessages[conversationId] = [];
+  updatedMessages[conversationId] = [...updatedMessages[conversationId], msg];
+
+  
   const conv = MOCK_CONVERSATIONS.find((c) => c.id === conversationId);
   if (conv) conv.lastMessageAt = msg.createdAt;
   return JSON.parse(JSON.stringify(msg));
@@ -141,9 +146,8 @@ export async function markConversationRead(conversationId: string): Promise<{ ok
   return { ok: true };
 }
 
-export async function setTyping(conversationId: string, typing: boolean): Promise<{ ok: boolean }> {
+export async function setTyping(): Promise<{ ok: boolean }> {
   await delay(80);
-  // no-op stub
   return { ok: true };
 }
 
@@ -159,7 +163,10 @@ export async function getOrCreateConversationWithUser(userId: string): Promise<A
       unreadCount: 0,
     };
     MOCK_CONVERSATIONS.unshift(conv);
-    MOCK_MESSAGES[conv.id] = [];
+    
+    const updatedMessages = { ...MOCK_MESSAGES };
+    updatedMessages[conv.id] = [];
+    
   }
   return JSON.parse(JSON.stringify(conv));
 }

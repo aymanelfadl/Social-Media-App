@@ -2,8 +2,9 @@ import { MessageCircle, Repeat2, Heart, BarChart3 } from "lucide-react";
 import type { Post } from "@/features/feed/feedSlice";
 import { useDispatch } from "react-redux";
 import { toggleLike, toggleRepost } from "@/features/feed/feedSlice";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { fetchDemoComments, type PostComment } from "@/lib/demo";
+import Image from "next/image";
 
 export default function PostCard({ post }: { post: Post }) {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export default function PostCard({ post }: { post: Post }) {
       <div className="flex gap-3">
         <div className="h-12 w-12 rounded-full bg-neutral-300 overflow-hidden shrink-0">
           {post.author.avatarUrl && (
-            <img src={post.author.avatarUrl} alt={post.author.name} className="h-12 w-12 object-cover" loading="lazy" />
+            <Image src={post.author.avatarUrl} alt={post.author.name} width={48} height={48} className="h-12 w-12 object-cover" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -53,19 +54,21 @@ export default function PostCard({ post }: { post: Post }) {
             <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
               {post.images.length === 1 && (
                 <div className="relative w-full">
-                  <img
+                 `` {/* Assuming demo images are 800x450 from picsum */}
+                  <Image
                     src={post.images[0]}
                     alt="Post image"
+                    width={800}
+                    height={450}
                     className="w-full h-auto"
-                    loading="lazy"
                   />
                 </div>
               )}
               {post.images.length > 1 && (
                 <div className="grid grid-cols-2 gap-1">
                   {post.images.slice(0, 4).map((img, i) => (
-                    <div key={i} className="aspect-square overflow-hidden bg-neutral-100">
-                      <img src={img} alt={`Post image ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                    <div key={i} className="relative aspect-square overflow-hidden bg-neutral-100">
+                      <Image src={img} alt={`Post image ${i + 1}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" />
                     </div>
                   ))}
                 </div>
@@ -121,7 +124,7 @@ export default function PostCard({ post }: { post: Post }) {
                     <div key={comment.id} className="flex gap-2">
                       <div className="h-8 w-8 rounded-full bg-neutral-300 overflow-hidden shrink-0">
                         {comment.avatarUrl && (
-                          <img src={comment.avatarUrl} alt={comment.name} className="h-8 w-8 object-cover" loading="lazy" />
+                          <Image src={comment.avatarUrl} alt={comment.name} width={32} height={32} className="h-8 w-8 object-cover" />
                         )}
                       </div>
                       <div>
