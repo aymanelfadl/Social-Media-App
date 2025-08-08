@@ -1,76 +1,95 @@
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import { setAuthToken } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { Home, Search, MessageSquare, User, LogIn, LogOut, SunMedium, Moon } from "lucide-react";
+import { clearAuthToken, isLoggedIn } from "@/lib/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "@/features/ui/uiSlice";
+import type { RootState } from "@/store";
 
-export default function Register() {
+export default function Sidebar() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const dispatch = useDispatch();
+  const theme = useSelector((s: RootState) => s.ui.theme);
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    const update = () => setAuthed(isLoggedIn());
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
 
-    // Demo register: set a token cookie and redirect home
-    setAuthToken(crypto.randomUUID(), 7);
-    router.replace("/");
+  const links = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/explore", label: "Explore", icon: Search },
+    { href: "/messages/page", label: "Messages", icon: MessageSquare },
+    { href: "/profile/page", label: "Profile", icon: User },
+  ];
+
+  const handleLogout = () => {
+    clearAuthToken();
+    router.replace("/auth/login");
   };
 
   return (
-    <div className="px-4 py-8">
-      <div className="mx-auto max-w-md">
-        <Card className="p-6">
-          <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            Join the conversation in seconds.
-          </p>
-
-          <form className="mt-6 space-y-4" onSubmit={onSubmit}>
-            <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="name">Name</label>
-              <input
-                id="name"
-                className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
-                placeholder="Your name"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
-                placeholder="you@example.com"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="password">Password</label>
-              <input
-                id="password"
-                type="password"
-                className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating..." : "Create account"}
-            </Button>
-          </form>
-
-          <p className="mt-4 text-sm text-neutral-500">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="text-sky-600 hover:underline">
-              Log in
-            </Link>
-          </p>
-        </Card>
+    <nav className="sticky top-[4.25rem] space-y-2">
+      <div className="flex items-center justify-between px-3 py-2">
+        <div className="flex items-center gap-2">
+          <div className="h-10 w-10 rounded-2xl bg-sky-500" />
+          <span className="text-xl font-bold">Social App</span>
+        </div>
+        <button
+          aria-label="Toggle theme"
+          onClick={() => dispatch(toggleTheme())}
+          className="inline-flex items-center justify-center rounded-full p-2 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+          title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+        >
+          {theme === "dark" ? <SunMedium className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
       </div>
-    </div>
+
+      <ul className="space-y-1">
+        {links.map((l) => {
+          const Icon = l.icon;
+          const active = router.pathname === l.href;
+          return (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className={`flex items-center gap-3 rounded-full px-4 py-3 text-[15px] transition-colors ${
+                  active
+                    ? "bg-neutral-100 dark:bg-white/10 font-semibold"
+                    : "hover:bg-neutral-100 dark:hover:bg-white/5"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{l.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="px-4 pt-2">
+        {!authed ? (
+          <Link
+            href="/auth/login"
+            className="inline-flex w-full items-center justify-center rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-600"
+          >
+            <LogIn className="mr-2 h-4 w-4" />
+            Log in
+          </Link>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+          </button>
+        )}
+      </div>
+    </nav>
   );
 }

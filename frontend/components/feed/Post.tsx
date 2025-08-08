@@ -3,7 +3,7 @@ import type { Post } from "@/features/feed/feedSlice";
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <article className="border-b border-neutral-200 dark:border-neutral-800 p-4 transition-colors hover:bg-neutral-50/60 dark:hover:bg-black/40">
+    <article className="border-b border-neutral-200 dark:border-neutral-800 p-4 transition-colors hover:bg-neutral-50/70 dark:hover:bg-white/5">
       <div className="flex gap-3">
         <div className="h-12 w-12 rounded-full bg-neutral-300 overflow-hidden shrink-0">
           {post.author.avatarUrl && (
@@ -56,19 +56,19 @@ export default function PostCard({ post }: { post: Post }) {
           )}
 
           <footer className="mt-3 flex justify-between max-w-md text-neutral-500">
-            <button aria-label="Reply" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 hover:bg-sky-50 dark:hover:bg-black/40 hover:text-sky-600">
+            <button aria-label="Reply" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-sky-50 dark:hover:bg-white/5 hover:text-sky-600">
               <MessageCircle className="h-4 w-4" />
               <span className="text-xs">{post.metrics.replies}</span>
             </button>
-            <button aria-label="Repost" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 hover:bg-emerald-50 dark:hover:bg-black/40 hover:text-emerald-600">
+            <button aria-label="Repost" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-emerald-50 dark:hover:bg-white/5 hover:text-emerald-600">
               <Repeat2 className="h-4 w-4" />
               <span className="text-xs">{post.metrics.reposts}</span>
             </button>
-            <button aria-label="Like" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 hover:bg-rose-50 dark:hover:bg-black/40 hover:text-rose-600">
+            <button aria-label="Like" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-rose-50 dark:hover:bg-white/5 hover:text-rose-600">
               <Heart className="h-4 w-4" />
               <span className="text-xs">{post.metrics.likes}</span>
             </button>
-            <button aria-label="Views" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 hover:bg-neutral-100 dark:hover:bg-black/40">
+            <button aria-label="Views" className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5">
               <BarChart3 className="h-4 w-4" />
               <span className="text-xs">{post.metrics.views}</span>
             </button>

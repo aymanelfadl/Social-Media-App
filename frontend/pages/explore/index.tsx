@@ -25,7 +25,10 @@ export default function Explore() {
         <h2 className="mb-3 text-lg font-bold">Trending</h2>
         <div className="grid grid-cols-2 gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900" />
+            <div
+              key={i}
+              className="aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
+            />
           ))}
         </div>
       </div>

@@ -12,7 +12,6 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    // seed demo posts once
     if (posts.length === 0) {
       const demo: Post[] = [
         {

@@ -1,5 +1,3 @@
-import { Pencil } from "lucide-react";
-
 export default function Profile() {
 	return (
 		<div>
@@ -15,9 +13,8 @@ export default function Profile() {
 							<p className="text-neutral-500">@you</p>
 						</div>
 					</div>
-					<button className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900">
-						<Pencil size={16} />
-						<span>Edit profile</span>
+					<button className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5">
+						Edit profile
 					</button>
 				</div>
 
@@ -35,7 +32,7 @@ export default function Profile() {
 						{['Posts', 'Replies', 'Media', 'Likes'].map((t) => (
 							<li
 								key={t}
-								className="flex-1 cursor-pointer py-3 text-center hover:bg-neutral-50 dark:hover:bg-neutral-900"
+								className="flex-1 cursor-pointer py-3 text-center transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
 							>
 								<span className="text-sm font-medium">{t}</span>
 							</li>
@@ -47,7 +44,7 @@ export default function Profile() {
 					{Array.from({ length: 3 }).map((_, i) => (
 						<div
 							key={i}
-							className="border-b border-neutral-200 dark:border-neutral-800 p-4"
+							className="border-b border-neutral-200 dark:border-neutral-800 p-4 transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
 						>
 							Profile post {i + 1}
 						</div>
