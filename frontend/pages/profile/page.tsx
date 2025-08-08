@@ -24,33 +24,52 @@ export default function Profile() {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
 
-  const myPosts = useMemo(() => posts.filter((p) => p.author.handle.toLowerCase() === me.handle.toLowerCase()), [posts, me.handle]);
+  const myPosts = useMemo(
+    () => posts.filter((p) => p.author.handle.toLowerCase() === me.handle.toLowerCase()),
+    [posts, me.handle]
+  );
   const likedPosts = useMemo(() => posts.filter((p) => p.liked), [posts]);
 
   return (
     <div>
       <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
         {me.bannerUrl && (
-          <img src={me.bannerUrl} alt="banner" className="h-full w-full object-cover" />
+          <img
+            src={me.bannerUrl}
+            alt="banner"
+            className="h-full w-full object-cover"
+          />
         )}
       </div>
 
       <div className="px-4">
-        <div className="-mt-12 flex items-end justify-between">
-          <div className="flex items-end gap-3">
+        <div className="-mt-16 flex items-end justify-between relative">
+          {/* Profile image above the banner */}
+          <div className="absolute -top-12 left-4">
             <div className="h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300 overflow-hidden">
               {me.avatarUrl && (
-                <img src={me.avatarUrl} alt={me.name} className="h-24 w-24 object-cover" />
+                <img
+                  src={me.avatarUrl}
+                  alt={me.name}
+                  className="h-24 w-24 object-cover"
+                />
               )}
             </div>
-            <div>
-              <h1 className="text-xl font-bold leading-tight">{me.name}</h1>
-              <p className="text-neutral-500">@{me.handle}</p>
-            </div>
           </div>
-          <button onClick={() => setEditOpen(true)} className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5">
-            Edit profile
-          </button>
+
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={() => setEditOpen(true)}
+              className="rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
+            >
+              Edit profile
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-12">
+          <h1 className="text-xl font-bold leading-tight">{me.name}</h1>
+          <p className="text-neutral-500">@{me.handle}</p>
         </div>
 
         <div className="mt-4">
@@ -161,12 +180,18 @@ export default function Profile() {
 
       {showFollowers && (
         <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/90" onClick={() => setShowFollowers(false)} />
+          <div
+            className="absolute inset-0 bg-white dark:bg-neutral-900"
+            onClick={() => setShowFollowers(false)}
+          />
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="w-full max-w-lg">
               <UserList users={followers} title="Followers" />
               <div className="mt-3 flex justify-end">
-                <button onClick={() => setShowFollowers(false)} className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer">
+                <button
+                  onClick={() => setShowFollowers(false)}
+                  className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer"
+                >
                   Close
                 </button>
               </div>
@@ -177,12 +202,18 @@ export default function Profile() {
 
       {showFollowing && (
         <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/90" onClick={() => setShowFollowing(false)} />
+          <div
+            className="absolute inset-0 bg-white dark:bg-neutral-900"
+            onClick={() => setShowFollowing(false)}
+          />
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="w-full max-w-lg">
               <UserList users={following} title="Following" />
               <div className="mt-3 flex justify-end">
-                <button onClick={() => setShowFollowing(false)} className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer">
+                <button
+                  onClick={() => setShowFollowing(false)}
+                  className="bg-neutral-50 rounded-full border px-4 py-2 text-sm transition-colors hover:bg-neutral-400 cursor-pointer"
+                >
                   Close
                 </button>
               </div>

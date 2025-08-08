@@ -35,41 +35,41 @@ export default function EditProfileModal({
       <div className="space-y-5">
         {/* Name */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-neutral-300">
+          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Name
           </label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
         </div>
 
         {/* Bio */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-neutral-300">
+          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Bio
           </label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={3}
-            className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition resize-none"
+            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition resize-none"
           />
         </div>
 
         {/* Avatar URL */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-neutral-300">
+          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Avatar URL
           </label>
           <input
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
           {avatarUrl && (
-            <div className="mt-3 h-16 w-16 overflow-hidden rounded-full border border-neutral-300 dark:border-neutral-700 shadow-sm">
+            <div className="mt-3 h-16 w-16 overflow-hidden rounded-full border border-neutral-300 dark:text-black/90 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={avatarUrl}
@@ -83,16 +83,16 @@ export default function EditProfileModal({
 
         {/* Banner URL */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-neutral-300">
+          <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-black">
             Banner URL
           </label>
           <input
             value={bannerUrl}
             onChange={(e) => setBannerUrl(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full rounded-lg border border-neutral-300 dark:text-black/90 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
           {bannerUrl && (
-            <div className="mt-3 h-24 overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 shadow-sm">
+            <div className="mt-3 h-24 overflow-hidden rounded-lg border border-neutral-300 dark:text-black/90 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={bannerUrl}
@@ -108,7 +108,7 @@ export default function EditProfileModal({
         <div className="flex justify-end gap-2 pt-2">
           <button
             onClick={onClose}
-            className="rounded-full border border-neutral-300 dark:border-neutral-700 px-4 py-2 text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-full border border-neutral-300 dark:text-black/90 px-4 py-2 text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
             Cancel
           </button>
