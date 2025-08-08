@@ -3,7 +3,7 @@ import Card from "@/components/ui/Card";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
-import { loginUser } from "@/lib/auth";
+import { loginUser, UserProfile } from "@/lib/auth";
 import { useDispatch } from "react-redux";
 import { login } from "@/features/auth/authSlice";
 
@@ -21,6 +21,7 @@ export default function Login() {
     
     try {
       const userProfile = {
+        id : crypto.randomUUID(),
         name: email.split('@')[0],
         email: email,
         handle: email.split('@')[0].toLowerCase(),
@@ -30,8 +31,8 @@ export default function Login() {
       dispatch(login({ user: { ...userProfile, id: token } }));
       const to = (router.query.from as string) || "/";
       router.replace(to);
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch (err: unknown) {
+      console.error("Login error:", err);
       setLoading(false);
     }
   };

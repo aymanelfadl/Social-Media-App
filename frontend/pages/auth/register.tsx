@@ -22,6 +22,7 @@ export default function Register() {
     const password = formData.get('password') as string;
     
     const userProfile = {
+      id : crypto.randomUUID(),
       name: name,
       email: email,
       handle: name.toLowerCase().replace(/\s+/g, ''),

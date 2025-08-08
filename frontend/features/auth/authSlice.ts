@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getUserProfile, isLoggedIn } from "@/lib/auth";
+import { getUserProfile } from "@/lib/auth";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -12,17 +12,19 @@ interface AuthState {
   } | null;
 }
 
-// Initialize with null user and check auth status
+export type AuthUser = NonNullable<AuthState["user"]>;
+
 const initialState: AuthState = {
-  isAuthenticated: false, // Will be set on client side
+  isAuthenticated: false,
   user: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    login(state, action: PayloadAction<{ user: any }>) {
+  reducers:
+  {
+    login(state, action: PayloadAction<{ user: AuthUser }>) {
       state.isAuthenticated = true;
       state.user = action.payload.user;
     },
@@ -33,15 +35,13 @@ const authSlice = createSlice({
     setAuthStatus(state, action: PayloadAction<boolean>) {
       state.isAuthenticated = action.payload;
       
-      // If authenticated but no user data, try to get it
       if (action.payload && !state.user) {
-        const profile = getUserProfile();
+        const profile = getUserProfile() as AuthUser | null;
         if (profile) {
           state.user = profile;
         }
       }
       
-      // If not authenticated, clear user
       if (!action.payload) {
         state.user = null;
       }

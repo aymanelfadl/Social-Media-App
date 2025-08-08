@@ -29,7 +29,7 @@ export function getUserProfile() {
   }
 }
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   name: string;
   handle: string;
@@ -40,15 +40,13 @@ interface UserProfile {
   [key: string]: unknown;
 }
 
-// Function to save or update user profile data
+
 export function saveUserProfile(userData: UserProfile) {
   const token = getAuthToken();
   if (!token) return false;
   
   try {
     localStorage.setItem(`user_${token}`, JSON.stringify(userData));
-    
-    // Dispatch an auth event to update Redux
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('auth-profile-update', { 
         detail: { userData } 
@@ -62,19 +60,11 @@ export function saveUserProfile(userData: UserProfile) {
   }
 }
 
-// Function to login a user
 export function loginUser(userData: UserProfile) {
-  // Generate a token if not provided
-  const token = userData.id || crypto.randomUUID();
-  
-  // Set the auth token
+  const token = userData.id;
   setAuthToken(token, 7);
-  
-  // Save the user profile
   userData.id = token;
   saveUserProfile(userData);
-  
-  // Dispatch an auth event for any listeners
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('auth-login', { 
       detail: { userData } 
@@ -84,12 +74,9 @@ export function loginUser(userData: UserProfile) {
   return token;
 }
 
-// Function to completely log out and clear user data
 export function logoutUser() {
-  // Clear the auth token from cookies
   clearAuthToken();
   
-  // Clear user data from localStorage
   try {
     const keys = Object.keys(localStorage);
     const userKeys = keys.filter(key => key.startsWith('user_'));
@@ -97,10 +84,7 @@ export function logoutUser() {
   } catch (e) {
     console.error("Error clearing user data:", e);
   }
-  
-  // Update Redux state (must be called from component)
   if (typeof window !== 'undefined') {
-    // Dispatch an auth event for any listeners
     window.dispatchEvent(new CustomEvent('auth-logout'));
   }
 }

@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { addMessage, setSending, updateMessage } from "@/features/messages/messagesSlice";
 import { sendMessage, setTyping } from "@/lib/api";
 import { Image as ImageIcon, SendHorizonal, X } from "lucide-react";
+import Image from "next/image";
 
 export default function MessageComposer({ conversationId }: { conversationId: string }) {
   const dispatch = useDispatch();
@@ -73,7 +74,7 @@ export default function MessageComposer({ conversationId }: { conversationId: st
           patch: { id: sent.id, status: "sent", createdAt: sent.createdAt },
         }),
       );
-    } catch (e) {
+    } catch {
       dispatch(updateMessage({ conversationId, id: tempId, patch: { status: "error" } }));
     } finally {
       dispatch(setSending(false));
@@ -89,7 +90,7 @@ export default function MessageComposer({ conversationId }: { conversationId: st
         <div className="flex gap-2">
           {images.map((url, idx) => (
             <div key={idx} className="relative h-16 w-16 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
-              <img src={url} alt="attachment" className="h-full w-full object-cover" />
+              <Image src={url} alt="attachment" fill className="object-cover" unoptimized />
               <button
                 type="button"
                 className="absolute -right-2 -top-2 rounded-full bg-black/60 p-1 text-white"
