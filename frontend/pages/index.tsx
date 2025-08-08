@@ -31,7 +31,6 @@ export default function Home() {
     }
   }, [dispatch, posts.length]);
 
-  // Handle file selection and preview
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
@@ -41,7 +40,6 @@ export default function Home() {
     }
   };
 
-  // Clear selected image
   const clearImage = () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);

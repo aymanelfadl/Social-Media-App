@@ -42,7 +42,7 @@ export default function Messages() {
           .sort((a, b) => +new Date(b.lastMessageAt) - +new Date(a.lastMessageAt)),
       );
     }, 12000);
-  }, [activeConv?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeConv?.id]);
 
   const onSend = () => {
     const t = draft.trim();
@@ -80,7 +80,6 @@ export default function Messages() {
               }`}
             >
               <div className="h-10 w-10 rounded-full bg-neutral-300 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={c.peer.avatarUrl} alt={c.peer.name} className="h-10 w-10 object-cover" />
               </div>
               <div className="flex-1 min-w-0">
@@ -103,7 +102,6 @@ export default function Messages() {
           {activeConv ? (
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-full bg-neutral-300 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={activeConv.peer.avatarUrl} alt={activeConv.peer.name} className="h-8 w-8 object-cover" />
               </div>
               <div>

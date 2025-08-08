@@ -1,8 +1,3 @@
-// Simple, free demo data using public APIs (no keys)
-// - Posts: JSONPlaceholder + RandomUser + Picsum images
-// - Users: RandomUser
-// - Trending images: Picsum
-
 import type { Post } from "@/features/feed/feedSlice";
 
 type DemoUser = {
@@ -24,18 +19,16 @@ export async function fetchDemoUsers(count = 12): Promise<DemoUser[]> {
 }
 
 export async function fetchDemoPosts(count = 8): Promise<Post[]> {
-  // Fetch authors and posts
   const [authors, postsRes] = await Promise.all([
     fetchDemoUsers(count),
     fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${count}`),
   ]);
   const postsJson: any[] = await postsRes.json();
 
-  // Map into your Post shape, mix in images from picsum
   const now = Date.now();
   return postsJson.map((p, i): Post => {
     const a = authors[i % authors.length]!;
-    const withImage = i % 2 === 0; // every other post has an image
+    const withImage = i % 2 === 0;
     return {
       id: String(p.id),
       author: {
@@ -57,7 +50,6 @@ export async function fetchDemoPosts(count = 8): Promise<Post[]> {
 }
 
 export async function fetchTrendingImages(count = 8): Promise<string[]> {
-  // Picsum supports deterministic seeds; build a small gallery
   return Array.from({ length: count }).map((_, i) => `https://picsum.photos/seed/trend-${i}/600/400`);
 }
 

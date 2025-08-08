@@ -2,8 +2,8 @@ export type ProfileData = {
   name: string;
   handle: string;
   bio?: string;
-  avatarUrl?: string; // can be data URL or remote URL
-  bannerUrl?: string; // can be data URL or remote URL
+  avatarUrl?: string;
+  bannerUrl?: string;
 };
 
 const PROFILE_KEY = "profile.v1";

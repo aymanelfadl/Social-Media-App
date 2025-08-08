@@ -36,7 +36,6 @@ export default function Explore() {
               key={i}
               className="aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt="trend" className="w-full h-full object-cover" />
             </div>
           ))}
