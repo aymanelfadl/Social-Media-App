@@ -3,6 +3,7 @@ import { fileToDataURL } from "@/lib/persist";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMe } from "@/features/profile/profileSlice";
 import type { RootState } from "@/store";
+import { getAuthToken } from "@/lib/auth";
 
 export default function ProfileHeader({ onEditClick }: { onEditClick: () => void }) {
   const dispatch = useDispatch();
@@ -14,11 +15,36 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
   const onPickBanner = async (file: File) => {
     const dataUrl = await fileToDataURL(file);
     dispatch(updateMe({ bannerUrl: dataUrl }));
+    
+    // Save to localStorage
+    saveUserData({ bannerUrl: dataUrl });
   };
 
   const onPickAvatar = async (file: File) => {
     const dataUrl = await fileToDataURL(file);
     dispatch(updateMe({ avatarUrl: dataUrl }));
+    
+    // Save to localStorage
+    saveUserData({ avatarUrl: dataUrl });
+  };
+  
+  // Helper to save user data changes to localStorage
+  const saveUserData = (updates: Partial<typeof me>) => {
+    const token = getAuthToken();
+    if (!token) return;
+    
+    try {
+      const key = `user_${token}`;
+      const existingData = localStorage.getItem(key);
+      const userData = existingData ? JSON.parse(existingData) : { ...me };
+      
+      localStorage.setItem(key, JSON.stringify({
+        ...userData,
+        ...updates
+      }));
+    } catch (e) {
+      console.error("Error saving user data:", e);
+    }
   };
 
   return (

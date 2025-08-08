@@ -3,6 +3,7 @@ import Modal from "@/components/common/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMe } from "@/features/profile/profileSlice";
 import type { RootState } from "@/store";
+import { getAuthToken } from "@/lib/auth";
 
 export default function EditProfileModal({
   open,
@@ -28,14 +29,33 @@ export default function EditProfileModal({
   }, [open, me]);
 
   const onSave = () => {
-    dispatch(
-      updateMe({
-        name: name.trim(),
-        bio: bio.trim(),
-        avatarUrl: avatarUrl.trim(),
-        bannerUrl: bannerUrl.trim(),
-      })
-    );
+    const updates = {
+      name: name.trim(),
+      bio: bio.trim(),
+      avatarUrl: avatarUrl.trim(),
+      bannerUrl: bannerUrl.trim(),
+    };
+    
+    // Update Redux store
+    dispatch(updateMe(updates));
+    
+    // Save to localStorage
+    const token = getAuthToken();
+    if (token) {
+      try {
+        const key = `user_${token}`;
+        const existingData = localStorage.getItem(key);
+        const userData = existingData ? JSON.parse(existingData) : { ...me };
+        
+        localStorage.setItem(key, JSON.stringify({
+          ...userData,
+          ...updates
+        }));
+      } catch (e) {
+        console.error("Error saving user data:", e);
+      }
+    }
+    
     onClose();
   };
 

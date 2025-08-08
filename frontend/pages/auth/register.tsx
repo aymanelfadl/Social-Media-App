@@ -12,7 +12,29 @@ export default function Register() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setAuthToken(crypto.randomUUID(), 7);
+    
+    // Get form data
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    
+    // Create user token and profile
+    const userToken = crypto.randomUUID();
+    setAuthToken(userToken, 7);
+    
+    // Save user profile data
+    const userProfile = {
+      id: userToken,
+      name: name,
+      handle: name.toLowerCase().replace(/\s+/g, ''),
+      bio: '',
+      avatarUrl: '',
+      bannerUrl: ''
+    };
+    
+    // Save to localStorage
+    localStorage.setItem(`user_${userToken}`, JSON.stringify(userProfile));
+    
     router.replace("/");
   };
 
@@ -30,6 +52,7 @@ export default function Register() {
               <label className="block text-sm font-medium mb-1" htmlFor="name">Name</label>
               <input
                 id="name"
+                name="name"
                 className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
                 placeholder="Your name"
                 required
@@ -39,6 +62,7 @@ export default function Register() {
               <label className="block text-sm font-medium mb-1" htmlFor="email">Email</label>
               <input
                 id="email"
+                name="email"
                 type="email"
                 className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
                 placeholder="you@example.com"

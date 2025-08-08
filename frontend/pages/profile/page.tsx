@@ -9,7 +9,7 @@ import { fetchDemoUsers } from "@/lib/demo";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
 import { toggleLike } from "@/features/feed/feedSlice";
 import { useEffect, useMemo, useState } from "react";
-import { isLoggedIn } from "@/lib/auth";
+import { isLoggedIn, getUserProfile } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -48,11 +48,21 @@ export default function Profile() {
       // Middleware will handle redirection, but this is a backup
       if (!isAuth) {
         router.push('/auth/login?from=/profile/page');
+        return;
+      }
+      
+      // Load user profile data
+      const userProfile = getUserProfile();
+      if (userProfile) {
+        dispatch({ 
+          type: 'profile/updateMe', 
+          payload: userProfile 
+        });
       }
     };
     
     checkAuth();
-  }, [router]);
+  }, [router, dispatch]);
 
   useEffect(() => {
     if (authenticated) {

@@ -15,3 +15,16 @@ export function clearAuthToken() {
 export function isLoggedIn() {
   return !!getAuthToken();
 }
+
+export function getUserProfile() {
+  const token = getAuthToken();
+  if (!token) return null;
+  
+  try {
+    const userData = localStorage.getItem(`user_${token}`);
+    return userData ? JSON.parse(userData) : null;
+  } catch (e) {
+    console.error("Error loading user profile:", e);
+    return null;
+  }
+}
