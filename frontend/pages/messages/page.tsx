@@ -13,12 +13,10 @@ export default function Messages() {
   const [draft, setDraft] = useState("");
   const tickerRef = useRef<number | null>(null);
   
-  // Get authentication state from Redux
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const activeConv = useMemo(() => convs.find((c) => c.id === activeId), [convs, activeId]);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/auth/login?from=/messages/page');

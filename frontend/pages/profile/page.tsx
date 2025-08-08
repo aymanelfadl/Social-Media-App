@@ -7,7 +7,6 @@ import PostCard from "@/components/feed/Post";
 import { Trash2 } from "lucide-react";
 import { fetchDemoUsers } from "@/lib/demo";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
-import { toggleLike } from "@/features/feed/feedSlice";
 import { useEffect, useMemo, useState } from "react";
 import { isLoggedIn, getUserProfile } from "@/lib/auth";
 import { useRouter } from "next/router";
@@ -15,7 +14,8 @@ import Link from "next/link";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
-export default function Profile() {
+export default function Profile()
+{
   const dispatch = useDispatch();
   const router = useRouter();
   const me = useSelector((s: RootState) => s.profile.me);
@@ -28,7 +28,7 @@ export default function Profile() {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(true); // Assume authenticated until client-side check
+  const [authenticated, setAuthenticated] = useState(true);
 
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);

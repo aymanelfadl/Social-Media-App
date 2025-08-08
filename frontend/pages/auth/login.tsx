@@ -16,25 +16,18 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     
-    // Get form data
     const formData = new FormData(e.target as HTMLFormElement);
     const email = formData.get('email') as string;
     
     try {
-      // For demo purposes, create a simple user profile
       const userProfile = {
         name: email.split('@')[0],
         email: email,
         handle: email.split('@')[0].toLowerCase(),
       };
       
-      // Login the user
       const token = loginUser(userProfile);
-      
-      // Update Redux state
       dispatch(login({ user: { ...userProfile, id: token } }));
-      
-      // Redirect
       const to = (router.query.from as string) || "/";
       router.replace(to);
     } catch (error) {

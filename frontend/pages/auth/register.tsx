@@ -16,13 +16,11 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     
-    // Get form data
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     
-    // Create user profile data
     const userProfile = {
       name: name,
       email: email,
@@ -33,13 +31,8 @@ export default function Register() {
     };
     
     try {
-      // Login user and get token
       const token = loginUser(userProfile);
-      
-      // Update Redux state
       dispatch(login({ user: { ...userProfile, id: token } }));
-      
-      // Navigate to home page
       router.replace("/");
     } catch (error) {
       console.error("Registration error:", error);
