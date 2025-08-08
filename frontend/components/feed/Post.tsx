@@ -2,12 +2,37 @@ import { MessageCircle, Repeat2, Heart, BarChart3 } from "lucide-react";
 import type { Post } from "@/features/feed/feedSlice";
 import { useDispatch } from "react-redux";
 import { toggleLike, toggleRepost } from "@/features/feed/feedSlice";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchDemoComments, type PostComment } from "@/lib/demo";
 
 export default function PostCard({ post }: { post: Post }) {
   const dispatch = useDispatch();
   const [replyOpen, setReplyOpen] = useState(false);
   const [reply, setReply] = useState("");
+  const [comments, setComments] = useState<PostComment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  
+  // Fetch comments when the user clicks to view them
+  const loadComments = async () => {
+    if (comments.length > 0) {
+      // If we already have comments, just toggle visibility
+      setShowComments(!showComments);
+      return;
+    }
+    
+    setLoadingComments(true);
+    setShowComments(true);
+    
+    try {
+      const fetchedComments = await fetchDemoComments(post.id, 3);
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error("Failed to load comments:", error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
 
   return (
     <article className="border-b border-neutral-200 dark:border-neutral-800 p-4 transition-colors hover:bg-neutral-50/70 dark:hover:bg-white/5">
@@ -28,42 +53,34 @@ export default function PostCard({ post }: { post: Post }) {
             <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
               {post.images.length === 1 && (
                 <div className="relative w-full">
-                  <img src={post.images[0]!} alt="post image" className="w-full h-auto object-cover" loading="lazy" />
+                  <img
+                    src={post.images[0]}
+                    alt="Post image"
+                    className="w-full h-auto"
+                    loading="lazy"
+                  />
                 </div>
               )}
-              {post.images.length === 2 && (
-                <div className="grid grid-cols-2 gap-0.5">
-                  {post.images.map((src, i) => (
-                    <img key={i} src={src!} alt="post image" className="w-full h-full object-cover" loading="lazy" />
-                  ))}
-                </div>
-              )}
-              {post.images.length === 3 && (
-                <div className="grid grid-cols-2 gap-0.5">
-                  <div className="col-span-1">
-                    <img src={post.images[0]!} alt="post image" className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                  <div className="col-span-1 grid grid-rows-2 gap-0.5">
-                    <img src={post.images[1]!} alt="post image" className="w-full h-full object-cover" loading="lazy" />
-                    <img src={post.images[2]!} alt="post image" className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                </div>
-              )}
-              {post.images.length >= 4 && (
-                <div className="grid grid-cols-2 gap-0.5">
-                  {post.images.slice(0, 4).map((src, i) => (
-                    <img key={i} src={src!} alt="post image" className="w-full h-full object-cover" loading="lazy" />
+              {post.images.length > 1 && (
+                <div className="grid grid-cols-2 gap-1">
+                  {post.images.slice(0, 4).map((img, i) => (
+                    <div key={i} className="aspect-square overflow-hidden bg-neutral-100">
+                      <img src={img} alt={`Post image ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
                   ))}
                 </div>
               )}
             </div>
           )}
 
-          <footer className="mt-3 flex justify-between max-w-md text-neutral-500">
+          <footer className="mt-3 flex items-center justify-between text-neutral-500">
             <button
               aria-label="Reply"
-              onClick={() => setReplyOpen((v) => !v)}
-              className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-sky-50 dark:hover:bg-white/5 hover:text-sky-600"
+              onClick={() => {
+                loadComments();
+                setReplyOpen(!replyOpen);
+              }}
+              className="group inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-sky-50 dark:hover:bg-white/5 hover:text-sky-500"
             >
               <MessageCircle className="h-4 w-4" />
               <span className="text-xs">{post.metrics.replies}</span>
@@ -92,13 +109,59 @@ export default function PostCard({ post }: { post: Post }) {
             </button>
           </footer>
 
+          {/* Comments Section */}
+          {showComments && (
+            <div className="mt-3 border-t border-neutral-200 dark:border-neutral-800 pt-3">
+              <h4 className="text-sm font-medium mb-2">Comments</h4>
+              {loadingComments ? (
+                <div className="text-sm text-neutral-500">Loading comments...</div>
+              ) : comments.length > 0 ? (
+                <div className="space-y-3">
+                  {comments.map(comment => (
+                    <div key={comment.id} className="flex gap-2">
+                      <div className="h-8 w-8 rounded-full bg-neutral-300 overflow-hidden shrink-0">
+                        {comment.avatarUrl && (
+                          <img src={comment.avatarUrl} alt={comment.name} className="h-8 w-8 object-cover" loading="lazy" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <span className="font-semibold">{comment.name}</span>
+                          <span className="text-neutral-500">@{comment.handle}</span>
+                        </div>
+                        <p className="text-sm">{comment.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-neutral-500">No comments yet</div>
+              )}
+            </div>
+          )}
+
           {replyOpen && (
             <form
               className="mt-3 flex items-start gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!reply.trim()) return;
-                alert(`Reply to ${post.id}: ${reply} (wire API later)`);
+                
+                // Create a new comment from the reply
+                const newComment = {
+                  id: `temp-${Date.now()}`,
+                  postId: post.id,
+                  name: "You",
+                  handle: "you",
+                  content: reply,
+                  createdAt: new Date().toISOString()
+                };
+                
+                // Add the comment to the list
+                setComments(prev => [newComment, ...prev]);
+                setShowComments(true);
+                
+                // Reset form
                 setReply("");
                 setReplyOpen(false);
               }}

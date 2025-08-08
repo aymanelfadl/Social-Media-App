@@ -96,3 +96,80 @@ export async function buildDemoThread(conversationId: string, peer: DemoUser): P
     createdAt: new Date(base + i * 30 * 60 * 1000).toISOString(),
   }));
 }
+
+export type PostComment = {
+  id: string;
+  postId: string;
+  name: string;
+  handle: string;
+  avatarUrl?: string;
+  content: string;
+  createdAt: string;
+};
+
+export async function fetchDemoComments(postId: string, count = 3): Promise<PostComment[]> {
+  // Fetch from JSON placeholder API
+  const res = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}&_limit=${count}`);
+  const comments = await res.json();
+
+  // Get random users for the comments
+  const commenters = await fetchDemoUsers(count);
+
+  // Create demo comments with actual users
+  return comments.map((comment: any, index: number): PostComment => {
+    const commenter = commenters[index % commenters.length]!;
+    return {
+      id: String(comment.id),
+      postId: String(comment.postId),
+      name: commenter.name,
+      handle: commenter.handle,
+      avatarUrl: commenter.avatarUrl,
+      content: comment.body,
+      createdAt: new Date(Date.now() - index * 3600_000).toISOString(),
+    };
+  });
+}
+
+// Function to get user-specific posts (posts from the user and those they follow)
+export async function getUserPosts(userId: string, count = 5): Promise<Post[]> {
+  // First get some demo posts as a base
+  const demoPosts = await fetchDemoPosts(count);
+
+  // Get the user profile
+  let userProfile: any = null;
+  try {
+    const userData = localStorage.getItem(`user_${userId}`);
+    if (userData) {
+      userProfile = JSON.parse(userData);
+    }
+  } catch (e) {
+    console.error("Error loading user profile for posts:", e);
+  }
+
+  // If no user profile, just return demo posts
+  if (!userProfile) {
+    return demoPosts;
+  }
+
+  // Create a user post at the top
+  const userPost: Post = {
+    id: `user-${Date.now()}`,
+    author: {
+      name: userProfile.name || "You",
+      handle: userProfile.handle || "you",
+      avatarUrl: userProfile.avatarUrl || "",
+    },
+    content: "This is my first post! Welcome to my profile.",
+    createdAt: new Date().toISOString(),
+    images: userProfile.avatarUrl ? [userProfile.avatarUrl] : undefined,
+    metrics: {
+      replies: 0,
+      reposts: 0,
+      likes: 2,
+      views: 15,
+    },
+  };
+
+  // Return user's post at the top, followed by demo posts
+  return [userPost, ...demoPosts];
+}

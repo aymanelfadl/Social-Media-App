@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Home, Search, MessageSquare, User, LogIn, LogOut, SunMedium, Moon } from "lucide-react";
-import { clearAuthToken, isLoggedIn } from "@/lib/auth";
+import { isLoggedIn, logoutUser } from "@/lib/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/features/ui/uiSlice";
 import type { RootState } from "@/store";
@@ -28,7 +28,7 @@ export default function Sidebar() {
   ];
 
   const handleLogout = () => {
-    clearAuthToken();
+    logoutUser();
     router.replace("/auth/login");
   };
 

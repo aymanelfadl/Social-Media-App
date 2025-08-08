@@ -4,8 +4,8 @@ import { addPost, setPosts, type Post } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
 import { Feather, Image as ImageIcon, X } from "lucide-react";
-import { fetchDemoPosts } from "@/lib/demo";
-import { isLoggedIn } from "@/lib/auth";
+import { fetchDemoPosts, getUserPosts } from "@/lib/demo";
+import { isLoggedIn, getAuthToken } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -44,9 +44,19 @@ export default function Home()
   useEffect(() => {
     if (authenticated && posts.length === 0) {
       setLoading(true);
-      fetchDemoPosts(8)
-        .then((demo) => dispatch(setPosts(demo)))
-        .finally(() => setLoading(false));
+      
+      const token = getAuthToken();
+      if (token) {
+        // Load user-specific posts if logged in
+        getUserPosts(token, 8)
+          .then((userPosts) => dispatch(setPosts(userPosts)))
+          .finally(() => setLoading(false));
+      } else {
+        // Fallback to demo posts if token is missing
+        fetchDemoPosts(8)
+          .then((demo) => dispatch(setPosts(demo)))
+          .finally(() => setLoading(false));
+      }
     }
   }, [dispatch, posts.length, authenticated]);
 

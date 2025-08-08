@@ -28,3 +28,36 @@ export function getUserProfile() {
     return null;
   }
 }
+
+// Function to save or update user profile data
+export function saveUserProfile(userData: any) {
+  const token = getAuthToken();
+  if (!token) return false;
+  
+  try {
+    localStorage.setItem(`user_${token}`, JSON.stringify(userData));
+    return true;
+  } catch (e) {
+    console.error("Error saving user profile:", e);
+    return false;
+  }
+}
+
+// Function to completely log out and clear user data
+export function logoutUser() {
+  // Clear the auth token from cookies
+  clearAuthToken();
+  
+  // You could also clear any user-specific data from localStorage here
+  // For example, if you want to clear all user data:
+  // localStorage.clear();
+  
+  // Or, if you want to be more selective:
+  try {
+    const keys = Object.keys(localStorage);
+    const userKeys = keys.filter(key => key.startsWith('user_'));
+    userKeys.forEach(key => localStorage.removeItem(key));
+  } catch (e) {
+    console.error("Error clearing user data:", e);
+  }
+}
