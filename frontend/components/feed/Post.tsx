@@ -13,7 +13,11 @@ export default function PostCard({ post }: { post: Post }) {
   const [comments, setComments] = useState<PostComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  
+
+  // Helper: detect local blob/data URLs that Next/Image optimizer can't fetch
+  const isDataOrBlob = (url?: string) => !!url && (url.startsWith("data:") || url.startsWith("blob:"));
+  const authorAvatarUnoptimized = isDataOrBlob(post.author.avatarUrl);
+
   // Fetch comments when the user clicks to view them
   const loadComments = async () => {
     if (comments.length > 0) {
@@ -21,10 +25,10 @@ export default function PostCard({ post }: { post: Post }) {
       setShowComments(!showComments);
       return;
     }
-    
+
     setLoadingComments(true);
     setShowComments(true);
-    
+
     try {
       const fetchedComments = await fetchDemoComments(post.id, 3);
       setComments(fetchedComments);
@@ -40,7 +44,7 @@ export default function PostCard({ post }: { post: Post }) {
       <div className="flex gap-3">
         <div className="h-12 w-12 rounded-full bg-neutral-300 overflow-hidden shrink-0">
           {post.author.avatarUrl && (
-            <Image src={post.author.avatarUrl} alt={post.author.name} width={48} height={48} className="h-12 w-12 object-cover" />
+            <Image src={post.author.avatarUrl} alt={post.author.name} width={48} height={48} className="h-12 w-12 object-cover" unoptimized={authorAvatarUnoptimized} />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -54,20 +58,27 @@ export default function PostCard({ post }: { post: Post }) {
             <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
               {post.images.length === 1 && (
                 <div className="relative w-full">
-                  <Image
-                    src={post.images[0]}
-                    alt="Post image"
-                    width={800}
-                    height={450}
-                    className="w-full h-auto"
-                  />
+                  {(() => {
+                    const src = post.images[0]!;
+                    const unopt = isDataOrBlob(src);
+                    return (
+                      <Image
+                        src={src}
+                        alt="Post image"
+                        width={800}
+                        height={450}
+                        className="w-full h-auto"
+                        unoptimized={unopt}
+                      />
+                    );
+                  })()}
                 </div>
               )}
               {post.images.length > 1 && (
                 <div className="grid grid-cols-2 gap-1">
                   {post.images.slice(0, 4).map((img, i) => (
                     <div key={i} className="relative aspect-square overflow-hidden bg-neutral-100">
-                      <Image src={img} alt={`Post image ${i + 1}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" />
+                      <Image src={img} alt={`Post image ${i + 1}`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" unoptimized={isDataOrBlob(img)} />
                     </div>
                   ))}
                 </div>
@@ -123,7 +134,7 @@ export default function PostCard({ post }: { post: Post }) {
                     <div key={comment.id} className="flex gap-2">
                       <div className="h-8 w-8 rounded-full bg-neutral-300 overflow-hidden shrink-0">
                         {comment.avatarUrl && (
-                          <Image src={comment.avatarUrl} alt={comment.name} width={32} height={32} className="h-8 w-8 object-cover" />
+                          <Image src={comment.avatarUrl} alt={comment.name} width={32} height={32} className="h-8 w-8 object-cover" unoptimized={isDataOrBlob(comment.avatarUrl)} />
                         )}
                       </div>
                       <div>
@@ -148,7 +159,7 @@ export default function PostCard({ post }: { post: Post }) {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!reply.trim()) return;
-                
+
                 // Create a new comment from the reply
                 const newComment = {
                   id: `temp-${Date.now()}`,
@@ -158,11 +169,11 @@ export default function PostCard({ post }: { post: Post }) {
                   content: reply,
                   createdAt: new Date().toISOString()
                 };
-                
+
                 // Add the comment to the list
                 setComments(prev => [newComment, ...prev]);
                 setShowComments(true);
-                
+
                 // Reset form
                 setReply("");
                 setReplyOpen(false);

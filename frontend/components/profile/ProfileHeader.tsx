@@ -13,6 +13,9 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
+  // Detect local data/blob URLs which the Image optimizer cannot fetch in production
+  const isDataOrBlob = (url?: string) => !!url && (url.startsWith("data:") || url.startsWith("blob:"));
+
   const onPickBanner = async (file: File) => {
     const dataUrl = await fileToDataURL(file);
     dispatch(updateMe({ bannerUrl: dataUrl }));
@@ -51,7 +54,7 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
     <div>
       <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
         {me.bannerUrl && (
-          <Image src={me.bannerUrl} alt="banner" fill className="object-cover" />
+          <Image src={me.bannerUrl} alt="banner" fill className="object-cover" unoptimized={isDataOrBlob(me.bannerUrl)} />
         )}
         <div className="absolute right-3 top-3 flex gap-2">
           <button
@@ -78,7 +81,7 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
           <div className="flex items-end gap-3">
             <div className="relative h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300 overflow-hidden">
               {me.avatarUrl && (
-                <Image src={me.avatarUrl} alt={me.name} width={96} height={96} className="h-24 w-24 object-cover" />
+                <Image src={me.avatarUrl} alt={me.name} width={96} height={96} className="h-24 w-24 object-cover" unoptimized={isDataOrBlob(me.avatarUrl)} />
               )}
               <button
                 onClick={() => avatarInputRef.current?.click()}

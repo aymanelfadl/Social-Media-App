@@ -25,6 +25,9 @@ export default function Home()
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [authenticated, setAuthenticated] = useState(true);
 
+  // Helper for Next/Image on Vercel (optimizer cannot fetch blob:/data:)
+  const isDataOrBlob = (url?: string) => !!url && (url.startsWith("data:") || url.startsWith("blob:"));
+
   const maxLen = 280;
   const remaining = maxLen - text.length;
   const over = remaining < 0;
@@ -130,6 +133,7 @@ export default function Home()
               width={48}
               height={48}
               className="h-12 w-12 rounded-full shrink-0 object-cover"
+              unoptimized={isDataOrBlob(profile.avatarUrl)}
             />
           ) : (
             <div className="h-12 w-12 rounded-full bg-neutral-300 shrink-0" />
