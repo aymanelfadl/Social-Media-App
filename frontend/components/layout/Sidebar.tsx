@@ -23,7 +23,12 @@ export default function Sidebar() {
           href="/messages"
           className="flex items-center gap-4 rounded-full px-4 py-3 text-lg font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900"
         >
-          <Mail size={24} />{" "}
+          <span className="relative inline-flex">
+            <Mail size={24} />
+            <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-semibold text-white">
+              3
+            </span>
+          </span>
           <span className="hidden xl:inline">Messages</span>
         </Link>
         <Link

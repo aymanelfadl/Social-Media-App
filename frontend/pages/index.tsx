@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { addPost, setPosts, type Post } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
+import { Feather } from "lucide-react";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -73,8 +74,9 @@ export default function Home() {
               />
             </div>
             <div className="mt-3 flex justify-end">
-              <button onClick={onPost} className="rounded-full bg-sky-500 px-4 py-2 text-white hover:bg-sky-600 disabled:opacity-50" disabled={!text.trim() && !imageUrl.trim()}>
-                Post
+              <button onClick={onPost} className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-4 py-2 text-white hover:bg-sky-600 disabled:opacity-50" disabled={!text.trim() && !imageUrl.trim()} aria-label="Post">
+                <Feather size={16} />
+                <span>Post</span>
               </button>
             </div>
           </div>

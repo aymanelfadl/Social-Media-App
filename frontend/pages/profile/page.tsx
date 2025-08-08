@@ -1,3 +1,5 @@
+import { Pencil } from "lucide-react";
+
 export default function Profile() {
 	return (
 		<div>
@@ -13,8 +15,9 @@ export default function Profile() {
 							<p className="text-neutral-500">@you</p>
 						</div>
 					</div>
-					<button className="rounded-full border px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900">
-						Edit profile
+					<button className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900">
+						<Pencil size={16} />
+						<span>Edit profile</span>
 					</button>
 				</div>
 

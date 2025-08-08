@@ -1,3 +1,5 @@
+import { UserPlus } from "lucide-react";
+
 export default function RightSidebar() {
   return (
     <aside className="px-4 py-3 space-y-4">
@@ -26,7 +28,10 @@ export default function RightSidebar() {
                 <p className="font-medium leading-tight">User {i + 1}</p>
                 <p className="text-neutral-500">@user{i + 1}</p>
               </div>
-              <button className="rounded-full border px-3 py-1 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900">Follow</button>
+              <button className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900" aria-label={`Follow User ${i + 1}`}>
+                <UserPlus size={16} />
+                <span>Follow</span>
+              </button>
             </li>
           ))}
         </ul>
