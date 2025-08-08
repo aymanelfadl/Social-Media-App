@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { loadWhoToFollow, saveWhoToFollow, type WhoToFollow } from "@/lib/persist";
 
 type HNHit = { objectID: string; title: string; url: string | null; points: number; author: string };
 

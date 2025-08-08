@@ -54,7 +54,6 @@ export default function PostCard({ post }: { post: Post }) {
             <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
               {post.images.length === 1 && (
                 <div className="relative w-full">
-                 `` {/* Assuming demo images are 800x450 from picsum */}
                   <Image
                     src={post.images[0]}
                     alt="Post image"

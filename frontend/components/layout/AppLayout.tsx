@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import RightSidebar from "./RightSidebar";
+import Link from "next/link";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,9 +14,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <span className="font-semibold">Social App</span>
           </div>
           <nav className="flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-300">
-            <a href="/explore" className="hover:text-foreground">Explore</a>
-            <a href="/messages/page" className="hover:text-foreground">Messages</a>
-            <a href="/profile/page" className="hover:text-foreground">Profile</a>
+            <Link href="/explore" className="hover:text-foreground">Explore</Link>
+            <Link href="/messages/page" className="hover:text-foreground">Messages</Link>
+            <Link href="/profile/page" className="hover:text-foreground">Profile</Link>
           </nav>
         </div>
       </header>

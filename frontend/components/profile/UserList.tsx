@@ -1,5 +1,6 @@
 import { FollowUser, follow, unfollow } from "@/features/profile/profileSlice";
 import { useDispatch } from "react-redux";
+import Image from "next/image";
 
 export default function UserList({ users, title }: { users: FollowUser[]; title: string }) {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ export default function UserList({ users, title }: { users: FollowUser[]; title:
           <li key={u.id} className="flex items-center justify-between gap-3 p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-neutral-300 overflow-hidden">
-                {u.avatarUrl && <img src={u.avatarUrl} alt={u.name} className="h-10 w-10 object-cover" />}
+                {u.avatarUrl && <Image src={u.avatarUrl} alt={u.name} width={40} height={40} className="h-10 w-10 object-cover" />}
               </div>
               <div>
                 <p className="font-medium leading-tight">{u.name}</p>

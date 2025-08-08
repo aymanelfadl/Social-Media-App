@@ -89,7 +89,6 @@ export default function MessageComposer({ conversationId }: { conversationId: st
         <div className="flex gap-2">
           {images.map((url, idx) => (
             <div key={idx} className="relative h-16 w-16 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt="attachment" className="h-full w-full object-cover" />
               <button
                 type="button"
@@ -125,10 +124,10 @@ export default function MessageComposer({ conversationId }: { conversationId: st
           rows={1}
           placeholder="Write a message"
           className="flex-1 resize-none rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm outline-none"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              onSubmit(e as unknown as FormEvent);
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              onSubmit(event as unknown as FormEvent);
             }
           }}
         />

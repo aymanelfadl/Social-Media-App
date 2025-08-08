@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/features/ui/uiSlice";
 import { logout } from "@/features/auth/authSlice";
 import type { RootState } from "@/store";
+import Image from "next/image";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function Sidebar() {
     <nav className="sticky top-[4.25rem] space-y-2">
       <div className="flex items-center justify-between px-3 py-2">
         <div className="flex items-center gap-2">
-          <img src="/images/logo.png" alt="Social App Logo" className="h-10 w-10 rounded-2xl object-cover" />
+          <Image src="/images/logo.png" alt="Social App Logo" width={40} height={40} className="h-10 w-10 rounded-2xl object-cover" />
           <span className="text-xl font-bold">Social App</span>
         </div>
         <button

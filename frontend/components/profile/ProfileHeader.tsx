@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateMe } from "@/features/profile/profileSlice";
 import type { RootState } from "@/store";
 import { getAuthToken } from "@/lib/auth";
+import Image from "next/image";
 
 export default function ProfileHeader({ onEditClick }: { onEditClick: () => void }) {
   const dispatch = useDispatch();
@@ -16,7 +17,6 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
     const dataUrl = await fileToDataURL(file);
     dispatch(updateMe({ bannerUrl: dataUrl }));
     
-    // Save to localStorage
     saveUserData({ bannerUrl: dataUrl });
   };
 
@@ -51,7 +51,7 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
     <div>
       <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
         {me.bannerUrl && (
-          <img src={me.bannerUrl} alt="banner" className="h-full w-full object-cover" />
+          <Image src={me.bannerUrl} alt="banner" fill className="object-cover" />
         )}
         <div className="absolute right-3 top-3 flex gap-2">
           <button
@@ -78,7 +78,7 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
           <div className="flex items-end gap-3">
             <div className="relative h-24 w-24 rounded-full border-4 border-[var(--color-background)] bg-neutral-300 overflow-hidden">
               {me.avatarUrl && (
-                <img src={me.avatarUrl} alt={me.name} className="h-24 w-24 object-cover" />
+                <Image src={me.avatarUrl} alt={me.name} width={96} height={96} className="h-24 w-24 object-cover" />
               )}
               <button
                 onClick={() => avatarInputRef.current?.click()}
