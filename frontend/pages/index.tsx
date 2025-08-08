@@ -4,10 +4,12 @@ import { addPost, setPosts, type Post } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
 import { Feather, Image as ImageIcon } from "lucide-react";
+import { fetchDemoPosts } from "@/lib/demo";
 
 export default function Home() {
   const dispatch = useDispatch();
   const posts = useSelector((s: RootState) => s.feed.posts);
+  const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
@@ -17,28 +19,10 @@ export default function Home() {
 
   useEffect(() => {
     if (posts.length === 0) {
-      const demo: Post[] = [
-        {
-          id: "1",
-          author: { name: "Jane Doe", handle: "jane" },
-          content: "Building a social app UI with Next.js + Tailwind + Redux. ✨",
-          createdAt: new Date().toISOString(),
-          images: ["/images/logo.png"],
-          metrics: { replies: 12, reposts: 4, likes: 89, views: 1203 },
-          liked: false,
-          reposted: false,
-        },
-        {
-          id: "2",
-          author: { name: "Dev Guy", handle: "devguy" },
-          content: "Dark mode support via CSS variables and Tailwind's dark class.",
-          createdAt: new Date().toISOString(),
-          metrics: { replies: 2, reposts: 3, likes: 20, views: 450 },
-          liked: false,
-          reposted: false,
-        },
-      ];
-      dispatch(setPosts(demo));
+      setLoading(true);
+      fetchDemoPosts(8)
+        .then((demo) => dispatch(setPosts(demo)))
+        .finally(() => setLoading(false));
     }
   }, [dispatch, posts.length]);
 
@@ -57,8 +41,6 @@ export default function Home() {
       createdAt: new Date().toISOString(),
       images: imageUrl ? [imageUrl.trim()] : undefined,
       metrics: { replies: 0, reposts: 0, likes: 0, views: 0 },
-      liked: false,
-      reposted: false,
     };
     dispatch(addPost(newPost));
     setText("");
@@ -117,6 +99,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {loading && <div className="p-4 text-sm text-neutral-500">Loading feed…</div>}
 
       <div>
         {posts.map((p) => (

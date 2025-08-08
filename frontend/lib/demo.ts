@@ -1,0 +1,106 @@
+// Simple, free demo data using public APIs (no keys)
+// - Posts: JSONPlaceholder + RandomUser + Picsum images
+// - Users: RandomUser
+// - Trending images: Picsum
+
+import type { Post } from "@/features/feed/feedSlice";
+
+type DemoUser = {
+  id: string;
+  name: string;
+  handle: string;
+  avatarUrl: string;
+};
+
+export async function fetchDemoUsers(count = 12): Promise<DemoUser[]> {
+  const res = await fetch(`https://randomuser.me/api/?results=${count}&inc=name,login,picture`);
+  const { results } = await res.json();
+  return results.map((u: any) => ({
+    id: u.login.uuid as string,
+    name: `${u.name.first} ${u.name.last}` as string,
+    handle: `${u.name.first}${u.name.last}`.toLowerCase(),
+    avatarUrl: u.picture.medium as string,
+  }));
+}
+
+export async function fetchDemoPosts(count = 8): Promise<Post[]> {
+  // Fetch authors and posts
+  const [authors, postsRes] = await Promise.all([
+    fetchDemoUsers(count),
+    fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${count}`),
+  ]);
+  const postsJson: any[] = await postsRes.json();
+
+  // Map into your Post shape, mix in images from picsum
+  const now = Date.now();
+  return postsJson.map((p, i): Post => {
+    const a = authors[i % authors.length]!;
+    const withImage = i % 2 === 0; // every other post has an image
+    return {
+      id: String(p.id),
+      author: {
+        name: a.name,
+        handle: a.handle,
+        avatarUrl: a.avatarUrl,
+      },
+      content: p.title + "\n\n" + p.body,
+      createdAt: new Date(now - i * 3600_000).toISOString(),
+      images: withImage ? [`https://picsum.photos/seed/post-${p.id}/800/450`] : undefined,
+      metrics: {
+        replies: Math.floor(Math.random() * 30),
+        reposts: Math.floor(Math.random() * 20),
+        likes: Math.floor(Math.random() * 200),
+        views: 100 + Math.floor(Math.random() * 5000),
+      },
+    };
+  });
+}
+
+export async function fetchTrendingImages(count = 8): Promise<string[]> {
+  // Picsum supports deterministic seeds; build a small gallery
+  return Array.from({ length: count }).map((_, i) => `https://picsum.photos/seed/trend-${i}/600/400`);
+}
+
+export type DemoConversation = {
+  id: string;
+  peer: DemoUser;
+  lastMessageAt: string;
+  unread: number;
+};
+
+export type DemoMessage = {
+  id: string;
+  conversationId: string;
+  senderId: "me" | "peer";
+  text: string;
+  createdAt: string;
+};
+
+export async function buildDemoConversations(count = 6): Promise<DemoConversation[]> {
+  const users = await fetchDemoUsers(count);
+  const now = Date.now();
+  return users.map((u, i) => ({
+    id: `c-${u.id}`,
+    peer: u,
+    lastMessageAt: new Date(now - i * 7200_000).toISOString(),
+    unread: i % 3 === 0 ? 1 + (i % 2) : 0,
+  }));
+}
+
+export async function buildDemoThread(conversationId: string, peer: DemoUser): Promise<DemoMessage[]> {
+  const base = Date.now() - 6 * 3600_000;
+  const texts = [
+    "Hey! 👋",
+    "How's it going?",
+    "Just testing this chat UI.",
+    "Looks pretty nice!",
+    "Let's ship it. 🚀",
+  ];
+  return texts.map((t, i) => ({
+    id: `m-${conversationId}-${i}`,
+    conversationId,
+    senderId: i % 2 === 0 ? "peer" : "me",
+    text: i === 0 ? `Hi, I'm ${peer.name}. ${t}` : t,
+    createdAt: new Date(base + i * 30 * 60 * 1000).toISOString(),
+  }));
+}

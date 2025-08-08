@@ -1,20 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import EditProfileModal from "@/components/profile/EditProfileModal";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { removeMedia, removeReply } from "@/features/profile/profileSlice";
 import { toggleLike } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import UserList from "@/components/profile/UserList";
 import { Trash2 } from "lucide-react";
+import { fetchDemoUsers } from "@/lib/demo";
 
 type Tab = "Posts" | "Replies" | "Media" | "Likes";
 
 export default function Profile() {
   const dispatch = useDispatch();
   const me = useSelector((s: RootState) => s.profile.me);
-  const followers = useSelector((s: RootState) => s.profile.followers);
-  const following = useSelector((s: RootState) => s.profile.following);
   const replies = useSelector((s: RootState) => s.profile.replies);
   const media = useSelector((s: RootState) => s.profile.media);
   const posts = useSelector((s: RootState) => s.feed.posts);
@@ -23,6 +22,10 @@ export default function Profile() {
   const [editOpen, setEditOpen] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const [followers, setFollowers] = useState<any[]>([]);
+  const [following, setFollowing] = useState<any[]>([]);
 
   const myPosts = useMemo(
     () => posts.filter((p) => p.author.handle.toLowerCase() === me.handle.toLowerCase()),
@@ -30,6 +33,13 @@ export default function Profile() {
   );
   const likedPosts = useMemo(() => posts.filter((p) => p.liked), [posts]);
 
+  useEffect(() => {
+    Promise.all([fetchDemoUsers(8), fetchDemoUsers(6)]).then(([f1, f2]) => {
+      setFollowers(f1);
+      setFollowing(f2);
+      setLoading(false);
+    });
+  }, []);
   return (
     <div>
       <div className="relative h-48 bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
