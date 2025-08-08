@@ -1,20 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { addPost, setPosts, type Post } from "@/features/feed/feedSlice";
 import PostCard from "@/components/feed/Post";
 import type { RootState } from "@/store";
-import { Feather, Image as ImageIcon } from "lucide-react";
+import { Feather, Image as ImageIcon, X } from "lucide-react";
 import { fetchDemoPosts } from "@/lib/demo";
 
 export default function Home() {
   const dispatch = useDispatch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const posts = useSelector((s: RootState) => s.feed.posts);
   const profile = useSelector((s: RootState) => s.profile.me);
 
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const maxLen = 280;
   const remaining = maxLen - text.length;
@@ -29,25 +31,49 @@ export default function Home() {
     }
   }, [dispatch, posts.length]);
 
+  // Handle file selection and preview
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  // Clear selected image
+  const clearImage = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const canPost = useMemo(() => {
     const trimmed = text.trim();
-    return (trimmed.length > 0 || imageUrl.trim().length > 0) && !over;
-  }, [text, imageUrl, over]);
+    return (trimmed.length > 0 || selectedFile) && !over;
+  }, [text, selectedFile, over]);
 
   const onPost = () => {
     const trimmed = text.trim();
     if (!canPost) return;
+    
     const newPost: Post = {
       id: Math.random().toString(36).slice(2),
       author: { name: profile.name, handle: profile.handle, avatarUrl: profile.avatarUrl },
       content: trimmed,
       createdAt: new Date().toISOString(),
-      images: imageUrl ? [imageUrl.trim()] : undefined,
+      images: previewUrl ? [previewUrl] : undefined,
       metrics: { replies: 0, reposts: 0, likes: 0, views: 0 },
     };
+    
     dispatch(addPost(newPost));
     setText("");
-    setImageUrl("");
+    clearImage();
   };
 
   return (
@@ -72,15 +98,27 @@ export default function Home() {
               className="w-full resize-none bg-transparent outline-none placeholder:text-neutral-500"
             />
 
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto] items-center">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Paste image URL (optional)"
-                className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm outline-none"
-              />
-              <div className="flex items-center justify-end gap-3">
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                  aria-label="Add image"
+                >
+                  <ImageIcon size={16} />
+                  Add Image
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-3">
                 <div className={`text-xs ${over ? "text-rose-600" : "text-neutral-500"}`}>{remaining}</div>
                 <button
                   onClick={onPost}
@@ -94,21 +132,27 @@ export default function Home() {
               </div>
             </div>
 
-            {imageUrl.trim() && (
-              <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
+            {previewUrl && (
+              <div className="mt-3 relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
                 <img
-                  src={imageUrl.trim()}
-                  alt="preview"
+                  src={previewUrl}
+                  alt="Selected image preview"
                   className="w-full h-auto object-cover"
-                  onError={() => setImageUrl("")}
                 />
+                <button
+                  onClick={clearImage}
+                  className="absolute top-2 right-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                  aria-label="Remove image"
+                >
+                  <X size={16} />
+                </button>
               </div>
             )}
 
-            {!imageUrl.trim() && (
+            {!previewUrl && (
               <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
                 <ImageIcon className="h-4 w-4" />
-                Add an image via a URL to preview it here.
+                Click "Add Image" to upload a photo.
               </div>
             )}
           </div>
