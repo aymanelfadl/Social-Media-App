@@ -13,8 +13,6 @@ export default function EditProfileModal({
 }) {
   const dispatch = useDispatch();
   const me = useSelector((s: RootState) => s.profile.me);
-
-  // Sync local state with profile on open
   const [name, setName] = useState(me.name);
   const [bio, setBio] = useState(me.bio ?? "");
   const [avatarUrl, setAvatarUrl] = useState(me.avatarUrl ?? "");

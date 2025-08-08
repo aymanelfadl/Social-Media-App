@@ -30,7 +30,7 @@ export default function ProfileHeader({ onEditClick }: { onEditClick: () => void
         <div className="absolute right-3 top-3 flex gap-2">
           <button
             onClick={() => bannerInputRef.current?.click()}
-            className="rounded-full border px-3 py-1.5 text-sm transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
+            className="rounded-full border px-3 py-1.5 text-sm text-white transition-colors hover:bg-neutral-50 dark:hover:bg-white/5"
           >
             Change banner
           </button>
