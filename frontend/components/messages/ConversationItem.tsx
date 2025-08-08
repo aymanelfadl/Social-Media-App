@@ -1,5 +1,6 @@
 import { ApiConversation } from "@/lib/api";
 import Image from "next/image";
+import { shouldUnoptimize } from "@/lib/images";
 
 export default function ConversationItem({
   conv,
@@ -25,6 +26,7 @@ export default function ConversationItem({
             width={40}
             height={40}
             className="h-10 w-10 object-cover"
+            unoptimized={shouldUnoptimize(conv.peer.avatarUrl)}
           />
         )}
         <span

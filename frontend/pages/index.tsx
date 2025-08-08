@@ -9,6 +9,7 @@ import { isLoggedIn, getAuthToken } from "@/lib/auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
+import { shouldUnoptimize } from "@/lib/images";
 
 export default function Home()
 {
@@ -133,7 +134,7 @@ export default function Home()
               width={48}
               height={48}
               className="h-12 w-12 rounded-full shrink-0 object-cover"
-              unoptimized={isDataOrBlob(profile.avatarUrl)}
+              unoptimized={shouldUnoptimize(profile.avatarUrl)}
             />
           ) : (
             <div className="h-12 w-12 rounded-full bg-neutral-300 shrink-0" />
