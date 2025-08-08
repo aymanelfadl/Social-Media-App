@@ -1,8 +1,24 @@
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { FormEvent, useState } from "react";
+import { setAuthToken } from "@/lib/auth";
 
 export default function Login() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Demo auth: set a token cookie and redirect
+    setAuthToken(crypto.randomUUID(), 7);
+    const to = (router.query.from as string) || "/";
+    router.replace(to);
+  };
+
   return (
     <div className="px-4 py-8">
       <div className="mx-auto max-w-md">
@@ -12,7 +28,7 @@ export default function Login() {
             Welcome back! Please enter your credentials.
           </p>
 
-          <form className="mt-6 space-y-4">
+          <form className="mt-6 space-y-4" onSubmit={onSubmit}>
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="email">Email</label>
               <input
@@ -20,6 +36,7 @@ export default function Login() {
                 type="email"
                 className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
                 placeholder="you@example.com"
+                required
               />
             </div>
             <div>
@@ -29,6 +46,7 @@ export default function Login() {
                 type="password"
                 className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
                 placeholder="••••••••"
+                required
               />
             </div>
 
@@ -40,7 +58,9 @@ export default function Login() {
               <a className="text-sm text-sky-600 hover:underline" href="#">Forgot password?</a>
             </div>
 
-            <Button type="submit" className="w-full">Log in</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Logging in..." : "Log in"}
+            </Button>
           </form>
 
           <p className="mt-4 text-sm text-neutral-500">
